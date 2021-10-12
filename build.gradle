@@ -1,0 +1,182 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.13.2'
+    id 'jacoco'
+}
+
+group = 'io.github.lsd-consulting'
+project.version = scmVersion.version
+println "Build Version = ${project.version}"
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives javadocJar
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "skipped", "failed"
+    }
+    systemProperty("lsd.core.report.outputDir", "$buildDir/reports/lsd")
+    finalizedBy jacocoTestReport
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "Unit test results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false" as String)
+            if (result.testCount == 0 && !skipTests) {
+                throw new IllegalStateException("No tests were found. Failing the build")
+            }
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        html.setDestination( new File("${project.buildDir}/reports/coverage"))
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "io/lsdconsulting/lsd/distributed/config/**"
+            ])
+        }))
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "$group"
+            artifactId = 'lsd-distributed-mongodb-access'
+            version = scmVersion.version
+
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = 'lsd-distributed-mongodb-access'
+                description = 'This is a MongoDB version of the data access for the distributed data storage.'
+                url = 'https://github.com/lsd-consulting/lsd-distributed-mongodb-access'
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "Lukasz"
+                        email = "lukasz.gryzbon@gmail.com"
+                        organization = 'Integreety Ltd.'
+                        organizationUrl = 'https://www.integreety.co.uk'
+                    }
+                    developer {
+                        name = "Nick"
+                        email = "nicholas.mcdowall@gmail.com"
+                        organization = 'NKM IT Solutions'
+                        organizationUrl = 'https://github.com/nickmcdowall'
+                    }
+                }
+                scm {
+                    url = "https://github.com/lsd-consulting/lsd-distributed-mongodb-access.git"
+                }
+            }
+            repositories {
+                maven {
+                    name = 'sonatype'
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                    credentials(PasswordCredentials)
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+apply plugin: 'io.spring.dependency-management'
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2020.0.3'
+        mavenBom 'io.pivotal.spring.cloud:spring-cloud-services-dependencies:3.2.0.RELEASE'
+        mavenBom SpringBootPlugin.BOM_COORDINATES
+    }
+}
+
+dependencies {
+
+    // LSD
+    api 'io.github.lsd-consulting:lsd-core:0.1.31'
+    api 'io.github.lsd-consulting:lsd-distributed-data-access:0.1.0'
+    implementation 'io.github.lsd-consulting:lsd-formatting-library:0.1.8'
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Database driver for storing interactions
+    implementation 'org.mongodb:mongo-java-driver:3.12.10'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // Other
+    implementation 'org.apache.httpcomponents:httpcore:4.4.14' // Needed for DB connection security
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // Tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testImplementation 'org.junit.platform:junit-platform-commons:1.7.2'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
+}
