@@ -4,5 +4,5 @@
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.lsd-consulting/lsd-distributed-mongodb-access)
 ![Codecov](https://img.shields.io/codecov/c/github/lsd-consulting/lsd-distributed-mongodb-access)
 
-About
+## About
 This is a MongoDB version of the data access for the distributed data storage.
