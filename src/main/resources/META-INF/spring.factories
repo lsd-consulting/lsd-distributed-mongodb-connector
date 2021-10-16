@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  io.lsdconsulting.lsd.distributed.mongo.config.DbPropertyConfig,\
+  io.lsdconsulting.lsd.distributed.mongo.config.LibraryConfig

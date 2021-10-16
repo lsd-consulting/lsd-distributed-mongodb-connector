@@ -1,4 +1,4 @@
-package io.lsdconsulting.lsd.distributed.repository.codec;
+package io.lsdconsulting.lsd.distributed.mongo.repository.codec;
 
 import lombok.SneakyThrows;
 import org.bson.BsonReader;

@@ -1,4 +1,4 @@
-package io.lsdconsulting.lsd.distributed.integration.testapp;
+package io.lsdconsulting.lsd.distributed.mongo.integration.testapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

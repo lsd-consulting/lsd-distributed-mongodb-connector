@@ -1,4 +1,4 @@
-package io.lsdconsulting.lsd.distributed.integration.testapp.repository;
+package io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoException;
@@ -8,8 +8,8 @@ import de.flapdoodle.embed.mongo.MongodStarter;
 import de.flapdoodle.embed.mongo.config.IMongodConfig;
 import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Net;
-import io.lsdconsulting.lsd.distributed.model.InterceptedInteraction;
-import io.lsdconsulting.lsd.distributed.repository.codec.ZonedDateTimeCodec;
+import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction;
+import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;

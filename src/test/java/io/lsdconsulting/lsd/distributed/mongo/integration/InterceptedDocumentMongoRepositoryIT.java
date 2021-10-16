@@ -1,11 +1,11 @@
-package io.lsdconsulting.lsd.distributed.integration;
+package io.lsdconsulting.lsd.distributed.mongo.integration;
 
 import com.mongodb.client.ListIndexesIterable;
-import io.lsdconsulting.lsd.distributed.integration.testapp.TestApplication;
-import io.lsdconsulting.lsd.distributed.integration.testapp.config.RepositoryConfig;
-import io.lsdconsulting.lsd.distributed.integration.testapp.repository.TestRepository;
-import io.lsdconsulting.lsd.distributed.model.InterceptedInteraction;
-import io.lsdconsulting.lsd.distributed.repository.InterceptedDocumentMongoRepository;
+import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction;
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.TestApplication;
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.config.RepositoryConfig;
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository;
+import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +20,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.lsdconsulting.lsd.distributed.integration.testapp.repository.TestRepository.MONGODB_HOST;
-import static io.lsdconsulting.lsd.distributed.integration.testapp.repository.TestRepository.MONGODB_PORT;
-import static io.lsdconsulting.lsd.distributed.model.Type.REQUEST;
+import static io.lsdconsulting.lsd.distributed.access.model.Type.REQUEST;
+import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.MONGODB_HOST;
+import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.MONGODB_PORT;
 import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

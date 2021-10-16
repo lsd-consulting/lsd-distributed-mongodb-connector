@@ -1,6 +1,6 @@
-package io.lsdconsulting.lsd.distributed.repository.codec;
+package io.lsdconsulting.lsd.distributed.mongo.repository.codec;
 
-import io.lsdconsulting.lsd.distributed.model.Type;
+import io.lsdconsulting.lsd.distributed.access.model.Type;
 import lombok.SneakyThrows;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;

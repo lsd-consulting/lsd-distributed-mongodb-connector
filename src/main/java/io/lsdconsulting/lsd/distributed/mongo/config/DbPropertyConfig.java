@@ -1,4 +1,4 @@
-package io.lsdconsulting.lsd.distributed.config;
+package io.lsdconsulting.lsd.distributed.mongo.config;
 
 import lombok.Getter;
 import lombok.Setter;

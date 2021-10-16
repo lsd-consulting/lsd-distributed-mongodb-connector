@@ -1,4 +1,4 @@
-package io.lsdconsulting.lsd.distributed.repository;
+package io.lsdconsulting.lsd.distributed.mongo.repository;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -9,9 +9,10 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.connection.SslSettings;
-import io.lsdconsulting.lsd.distributed.model.InterceptedInteraction;
-import io.lsdconsulting.lsd.distributed.repository.codec.TypeCodec;
-import io.lsdconsulting.lsd.distributed.repository.codec.ZonedDateTimeCodec;
+import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction;
+import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository;
+import io.lsdconsulting.lsd.distributed.mongo.repository.codec.TypeCodec;
+import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.ssl.SSLContextBuilder;

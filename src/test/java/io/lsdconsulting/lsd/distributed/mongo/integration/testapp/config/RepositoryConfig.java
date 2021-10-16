@@ -1,10 +1,10 @@
-package io.lsdconsulting.lsd.distributed.integration.testapp.config;
+package io.lsdconsulting.lsd.distributed.mongo.integration.testapp.config;
 
-import io.lsdconsulting.lsd.distributed.integration.testapp.repository.TestRepository;
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
-import static io.lsdconsulting.lsd.distributed.integration.testapp.repository.TestRepository.setupDatabase;
+import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.setupDatabase;
 
 @TestConfiguration
 public class RepositoryConfig {
