@@ -1,0 +1,21 @@
+dependencies {
+
+    // LSD
+    api 'io.github.lsd-consulting:lsd-core:0.1.31'
+    api 'io.github.lsd-consulting:lsd-distributed-data-access:0.1.2'
+    implementation 'io.github.lsd-consulting:lsd-formatting-library:0.1.8'
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Database driver for storing interactions
+    implementation 'org.mongodb:mongo-java-driver:3.12.10'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // Other
+    implementation 'org.apache.httpcomponents:httpcore:4.4.14' // Needed for DB connection security
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}

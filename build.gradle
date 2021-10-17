@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id 'org.springframework.boot' version '2.4.2'
+    id 'org.springframework.boot' version '2.5.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java-library'
     id 'maven-publish'
@@ -45,24 +45,6 @@ artifacts {
 repositories {
     mavenLocal()
     mavenCentral()
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "skipped", "failed"
-    }
-    systemProperty("lsd.core.report.outputDir", "$buildDir/reports/lsd")
-    finalizedBy jacocoTestReport
-    afterSuite { desc, result ->
-        if (!desc.parent) {
-            println "Test results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false" as String)
-            if (result.testCount == 0 && !skipTests) {
-                throw new IllegalStateException("No tests were found. Failing the build")
-            }
-        }
-    }
 }
 
 jacocoTestReport {
@@ -152,31 +134,5 @@ dependencyManagement {
     }
 }
 
-dependencies {
-
-    // LSD
-    api 'io.github.lsd-consulting:lsd-core:0.1.31'
-    api 'io.github.lsd-consulting:lsd-distributed-data-access:0.1.1'
-    implementation 'io.github.lsd-consulting:lsd-formatting-library:0.1.8'
-
-    // Spring
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    // Database driver for storing interactions
-    implementation 'org.mongodb:mongo-java-driver:3.12.10'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
-    // Other
-    implementation 'org.apache.httpcomponents:httpcore:4.4.14' // Needed for DB connection security
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
-
-    // Tests
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testImplementation 'org.junit.platform:junit-platform-commons:1.7.2'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0'
-}
+apply from: 'dependencies.gradle'
+apply from: 'test.gradle'

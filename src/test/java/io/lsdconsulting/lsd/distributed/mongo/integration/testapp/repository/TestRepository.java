@@ -7,8 +7,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Net;
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +42,7 @@ public class TestRepository {
 
     public static void setupDatabase() {
         try {
-            final IMongodConfig mongodConfig = new MongodConfigBuilder()
+            final MongodConfig mongodConfig = MongodConfig.builder()
                     .version(PRODUCTION)
                     .net(new Net(MONGODB_HOST, MONGODB_PORT, localhostIsIPv6()))
                     .build();
