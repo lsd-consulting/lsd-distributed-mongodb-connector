@@ -1,0 +1,12 @@
+{
+  "properties": [
+    {
+      "name": "lsd.dist.db.trustStoreLocation",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "lsd.dist.db.trustStorePassword",
+      "type": "java.lang.String"
+    }
+  ]
+}
