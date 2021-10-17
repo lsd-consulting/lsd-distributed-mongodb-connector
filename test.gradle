@@ -1,7 +1,14 @@
 dependencies {
+
+    // Spring
+    testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // Lombok
+    testCompileOnly 'org.projectlombok:lombok:1.18.22'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+    // Other
     testImplementation 'org.junit.platform:junit-platform-commons:1.7.2'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.0.0'
 }
@@ -16,8 +23,7 @@ test {
     afterSuite { desc, result ->
         if (!desc.parent) {
             println "Test results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
-            boolean skipTests = Boolean.parseBoolean(project.findProperty('SKIP_TESTS') ?: "false" as String)
-            if (result.testCount == 0 && !skipTests) {
+            if (result.testCount == 0) {
                 throw new IllegalStateException("No tests were found. Failing the build")
             }
         }
