@@ -14,15 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
-import java.time.Instant;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.lsdconsulting.lsd.distributed.access.model.Type.REQUEST;
-import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.MONGODB_HOST;
-import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.MONGODB_PORT;
+import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.*;
+import static java.time.Instant.ofEpochSecond;
+import static java.time.ZonedDateTime.ofInstant;
 import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -44,7 +43,7 @@ class InterceptedDocumentMongoRepositoryIT {
 
     @AfterAll
     static void tearDown() {
-        TestRepository.tearDownDatabase();
+        tearDownDatabase();
     }
 
     @Test
@@ -68,7 +67,7 @@ class InterceptedDocumentMongoRepositoryIT {
                 .body("body")
                 .type(REQUEST)
                 .traceId("traceId")
-                .createdAt(ZonedDateTime.ofInstant(Instant.ofEpochSecond(0), ZoneId.of("UTC")))
+                .createdAt(ofInstant(ofEpochSecond(0), ZoneId.of("UTC")))
                 .build();
 
         underTest.save(interceptedInteraction);
@@ -82,6 +81,6 @@ class InterceptedDocumentMongoRepositoryIT {
         assertThat(result.get(0).getHttpMethod(), is("GET"));
         assertThat(result.get(0).getBody(), is("body"));
         assertThat(result.get(0).getType(), is(REQUEST));
-        assertThat(result.get(0).getCreatedAt(), is(ZonedDateTime.ofInstant(Instant.ofEpochSecond(0), ZoneId.of("UTC"))));
+        assertThat(result.get(0).getCreatedAt(), is(ofInstant(ofEpochSecond(0), ZoneId.of("UTC"))));
     }
 }
