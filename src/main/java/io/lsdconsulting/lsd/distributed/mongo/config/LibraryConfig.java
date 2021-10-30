@@ -1,6 +1,5 @@
 package io.lsdconsulting.lsd.distributed.mongo.config;
 
-import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteractionFactory;
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository;
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +16,5 @@ public class LibraryConfig {
                                                                        @Value("${lsd.dist.db.trustStoreLocation:#{null}}") String trustStoreLocation,
                                                                        @Value("${lsd.dist.db.trustStorePassword:#{null}}") String trustStorePassword) {
         return new InterceptedDocumentMongoRepository(dbConnectionString, trustStoreLocation, trustStorePassword);
-    }
-
-    @Bean
-    public InterceptedInteractionFactory mapGenerator(@Value("${spring.profiles.active:#{''}}") final String profile) {
-        return new InterceptedInteractionFactory(profile);
     }
 }
