@@ -47,6 +47,14 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
+    public void shouldNotSlowDownStartupIfDbDown() {
+        await()
+                .atLeast(1000, MILLISECONDS)
+                .atMost(2000, MILLISECONDS)
+                .untilAsserted(() -> assertThat(new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, null, null), is(notNullValue())));
+    }
+
+    @Test
     public void shouldHandleDbGoingDownAfterStartup() {
         InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, null, null);
         InterceptedInteraction interceptedInteraction =  easyRandom.nextObject(InterceptedInteraction.class);
@@ -82,6 +90,9 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
         underTest.save(interceptedInteraction);
         tearDownDatabase();
 
-        await().atLeast(1000, MILLISECONDS).atMost(2000, MILLISECONDS).untilAsserted(() -> assertThat(underTest.findByTraceIds("traceId"), is(empty())));
+        await()
+                .atLeast(1000, MILLISECONDS)
+                .atMost(2000, MILLISECONDS)
+                .untilAsserted(() -> assertThat(underTest.findByTraceIds("traceId"), is(empty())));
     }
 }
