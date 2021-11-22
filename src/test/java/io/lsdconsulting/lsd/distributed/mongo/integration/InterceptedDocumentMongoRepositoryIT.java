@@ -44,6 +44,7 @@ class InterceptedDocumentMongoRepositoryIT {
     @AfterAll
     static void tearDown() {
         tearDownDatabase();
+        tearDownClient();
     }
 
     @Test

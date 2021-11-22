@@ -28,6 +28,7 @@ import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Indexes.ascending;
 import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.bson.codecs.configuration.CodecRegistries.*;
 import static org.bson.codecs.pojo.PojoCodecProvider.builder;
@@ -37,6 +38,7 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
 
     public static final String DATABASE_NAME = "lsd";
     public static final String COLLECTION_NAME = "interceptedInteraction";
+    public static final int TIMEOUT = 1500;
 
     public static final CodecRegistry pojoCodecRegistry = fromRegistries(
             getDefaultCodecRegistry(),
@@ -44,19 +46,30 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
             fromProviders(builder().automatic(true).build())
     );
 
-
     private final MongoCollection<InterceptedInteraction> interceptedInteractions;
 
     public InterceptedDocumentMongoRepository(final String dbConnectionString,
                                               final String trustStoreLocation,
                                               final String trustStorePassword) {
 
-        final MongoClient mongoClient = prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword);
-        interceptedInteractions = prepareInterceptedInteractionCollection(mongoClient);
+        MongoCollection<InterceptedInteraction> temp;
+        try {
+            final MongoClient mongoClient = prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword);
+            temp = prepareInterceptedInteractionCollection(mongoClient);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            temp = null;
+        }
+        interceptedInteractions = temp;
     }
 
     private MongoClient prepareMongoClient(final String dbConnectionString, final String trustStoreLocation, final String trustStorePassword) {
         final MongoClientSettings.Builder builder = MongoClientSettings.builder()
+                .applyToSocketSettings(b -> {
+                    b.connectTimeout(TIMEOUT, MILLISECONDS);
+                    b.readTimeout(TIMEOUT, MILLISECONDS);
+                })
+                .applyToClusterSettings( b -> b.serverSelectionTimeout(TIMEOUT, MILLISECONDS))
                 .applyConnectionString(new ConnectionString(dbConnectionString));
 
         if (!isBlank(trustStoreLocation) && !isBlank(trustStorePassword)) {

@@ -61,8 +61,11 @@ public class TestRepository {
     }
 
     public static void tearDownDatabase() {
-        mongoClient.close();
         mongodExecutable.stop();
+    }
+
+    public static void tearDownClient() {
+        mongoClient.close();
     }
 
     public MongoCollection<Document> getCollection() {
