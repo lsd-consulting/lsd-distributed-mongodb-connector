@@ -52,7 +52,7 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
     public void shouldNotSlowDownStartupIfDbDown() {
         await()
                 .atLeast(450, MILLISECONDS)
-                .atMost(800, MILLISECONDS)
+                .atMost(1000, MILLISECONDS)
                 .untilAsserted(() -> assertThat(new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT), is(notNullValue())));
     }
 
@@ -94,7 +94,7 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
 
         await()
                 .atLeast(450, MILLISECONDS)
-                .atMost(800, MILLISECONDS)
+                .atMost(1000, MILLISECONDS)
                 .untilAsserted(() -> assertThat(underTest.findByTraceIds("traceId"), is(empty())));
     }
 }
