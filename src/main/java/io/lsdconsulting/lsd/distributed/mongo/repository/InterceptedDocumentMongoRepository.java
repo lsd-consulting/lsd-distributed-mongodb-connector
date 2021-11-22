@@ -36,9 +36,9 @@ import static org.bson.codecs.pojo.PojoCodecProvider.builder;
 @Slf4j
 public class InterceptedDocumentMongoRepository implements InterceptedDocumentRepository {
 
-    public static final String DATABASE_NAME = "lsd";
-    public static final String COLLECTION_NAME = "interceptedInteraction";
-    public static final int TIMEOUT = 1500;
+    public static final int DEFAULT_TIMEOUT = 1500;
+    private static final String DATABASE_NAME = "lsd";
+    private static final String COLLECTION_NAME = "interceptedInteraction";
 
     public static final CodecRegistry pojoCodecRegistry = fromRegistries(
             getDefaultCodecRegistry(),
@@ -49,12 +49,17 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
     private final MongoCollection<InterceptedInteraction> interceptedInteractions;
 
     public InterceptedDocumentMongoRepository(final String dbConnectionString,
+                                              final Integer connectionTimeout) {
+        this(dbConnectionString, null, null, connectionTimeout);
+    }
+
+    public InterceptedDocumentMongoRepository(final String dbConnectionString,
                                               final String trustStoreLocation,
-                                              final String trustStorePassword) {
+                                              final String trustStorePassword, Integer connectionTimeout) {
 
         MongoCollection<InterceptedInteraction> temp;
         try {
-            final MongoClient mongoClient = prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword);
+            final MongoClient mongoClient = prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword, connectionTimeout);
             temp = prepareInterceptedInteractionCollection(mongoClient);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -63,13 +68,13 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
         interceptedInteractions = temp;
     }
 
-    private MongoClient prepareMongoClient(final String dbConnectionString, final String trustStoreLocation, final String trustStorePassword) {
+    private MongoClient prepareMongoClient(final String dbConnectionString, final String trustStoreLocation, final String trustStorePassword, int connectionTimeout) {
         final MongoClientSettings.Builder builder = MongoClientSettings.builder()
                 .applyToSocketSettings(b -> {
-                    b.connectTimeout(TIMEOUT, MILLISECONDS);
-                    b.readTimeout(TIMEOUT, MILLISECONDS);
+                    b.connectTimeout(connectionTimeout, MILLISECONDS);
+                    b.readTimeout(connectionTimeout, MILLISECONDS);
                 })
-                .applyToClusterSettings( b -> b.serverSelectionTimeout(TIMEOUT, MILLISECONDS))
+                .applyToClusterSettings( b -> b.serverSelectionTimeout(connectionTimeout, MILLISECONDS))
                 .applyConnectionString(new ConnectionString(dbConnectionString));
 
         if (!isBlank(trustStoreLocation) && !isBlank(trustStorePassword)) {

@@ -38,7 +38,7 @@ class InterceptedDocumentMongoRepositoryIT {
 
     @BeforeEach
     void setup() {
-        underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, null, null);
+        underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,  1500);
     }
 
     @AfterAll

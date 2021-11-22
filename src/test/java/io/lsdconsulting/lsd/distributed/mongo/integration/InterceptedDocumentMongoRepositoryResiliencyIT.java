@@ -25,6 +25,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = {TestApplication.class})
 class InterceptedDocumentMongoRepositoryResiliencyIT {
 
+    private static final int DB_CONNECTION_TIMEOUT = 1500;
+
     private final EasyRandom easyRandom = new EasyRandom(new EasyRandomParameters().seed(Instant.now().toEpochMilli()));
 
     @BeforeEach
@@ -43,7 +45,7 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
 
     @Test
     public void shouldHandleDbBeingDownGracefullyOnStartup() {
-        new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, null, null);
+        new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10), DB_CONNECTION_TIMEOUT);
     }
 
     @Test
@@ -51,12 +53,12 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
         await()
                 .atLeast(1000, MILLISECONDS)
                 .atMost(2000, MILLISECONDS)
-                .untilAsserted(() -> assertThat(new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, null, null), is(notNullValue())));
+                .untilAsserted(() -> assertThat(new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT), is(notNullValue())));
     }
 
     @Test
     public void shouldHandleDbGoingDownAfterStartup() {
-        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, null, null);
+        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT);
         InterceptedInteraction interceptedInteraction =  easyRandom.nextObject(InterceptedInteraction.class);
         underTest.save(interceptedInteraction);
         List<InterceptedInteraction> initialResult = underTest.findByTraceIds("traceId");
@@ -70,7 +72,7 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
 
     @Test
     public void shouldRecoverFromDbGoingDown() {
-        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, null, null);
+        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT);
         InterceptedInteraction interceptedInteraction =  easyRandom.nextObject(InterceptedInteraction.class);
         underTest.save(interceptedInteraction);
         tearDownDatabase();
@@ -85,7 +87,7 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
 
     @Test
     public void shouldNotSlowDownProduction() {
-        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, null, null);
+        InterceptedDocumentMongoRepository underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT);
         InterceptedInteraction interceptedInteraction =  easyRandom.nextObject(InterceptedInteraction.class);
         underTest.save(interceptedInteraction);
         tearDownDatabase();
