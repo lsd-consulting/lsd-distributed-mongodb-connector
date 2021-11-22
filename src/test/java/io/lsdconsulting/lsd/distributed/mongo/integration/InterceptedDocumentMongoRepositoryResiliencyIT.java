@@ -25,7 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT, classes = {TestApplication.class})
 class InterceptedDocumentMongoRepositoryResiliencyIT {
 
-    private static final int DB_CONNECTION_TIMEOUT = 1500;
+    private static final int DB_CONNECTION_TIMEOUT = 500;
 
     private final EasyRandom easyRandom = new EasyRandom(new EasyRandomParameters().seed(Instant.now().toEpochMilli()));
 
@@ -51,8 +51,8 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
     @Test
     public void shouldNotSlowDownStartupIfDbDown() {
         await()
-                .atLeast(1000, MILLISECONDS)
-                .atMost(2000, MILLISECONDS)
+                .atLeast(450, MILLISECONDS)
+                .atMost(800, MILLISECONDS)
                 .untilAsserted(() -> assertThat(new InterceptedDocumentMongoRepository("mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT, DB_CONNECTION_TIMEOUT), is(notNullValue())));
     }
 
@@ -93,8 +93,8 @@ class InterceptedDocumentMongoRepositoryResiliencyIT {
         tearDownDatabase();
 
         await()
-                .atLeast(1000, MILLISECONDS)
-                .atMost(2000, MILLISECONDS)
+                .atLeast(450, MILLISECONDS)
+                .atMost(800, MILLISECONDS)
                 .untilAsserted(() -> assertThat(underTest.findByTraceIds("traceId"), is(empty())));
     }
 }
