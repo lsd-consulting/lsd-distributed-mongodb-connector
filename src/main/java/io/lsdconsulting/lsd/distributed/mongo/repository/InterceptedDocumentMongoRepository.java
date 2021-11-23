@@ -27,6 +27,7 @@ import java.util.List;
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Indexes.ascending;
+import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -120,7 +121,9 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
     public void save(final InterceptedInteraction interceptedInteraction) {
         if (repositoryActive()) {
             try {
+                long startTime = currentTimeMillis();
                 interceptedInteractions.insertOne(interceptedInteraction);
+                log.trace("save took {} ms", currentTimeMillis() - startTime);
             } catch (final MongoException e) {
                 log.error("Skipping persisting the interceptedInteraction due to exception - interceptedInteraction:{}, message:{}, stackTrace:{}", interceptedInteraction, e.getMessage(), e.getStackTrace());
             }
@@ -131,6 +134,7 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
     public List<InterceptedInteraction> findByTraceIds(final String... traceId) {
         final List<InterceptedInteraction> result = new ArrayList<>();
         if (repositoryActive()) {
+            long startTime = currentTimeMillis();
             try (final MongoCursor<InterceptedInteraction> cursor = interceptedInteractions
                     .find(in("traceId", traceId), InterceptedInteraction.class)
                     .sort(ascending("createdAt"))
@@ -138,6 +142,7 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
                 while (cursor.hasNext()) {
                     result.add(cursor.next());
                 }
+                log.trace("findByTraceIds took {} ms", currentTimeMillis() - startTime);
             } catch (final MongoException e) {
                 log.error("Failed to retrieve interceptedInteractions - message:{}, stackTrace:{}", e.getMessage(), e.getStackTrace());
             }
