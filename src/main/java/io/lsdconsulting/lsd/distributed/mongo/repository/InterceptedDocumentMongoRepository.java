@@ -118,27 +118,38 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
 
     @Override
     public void save(final InterceptedInteraction interceptedInteraction) {
-        try {
-            interceptedInteractions.insertOne(interceptedInteraction);
-        } catch (final MongoException e) {
-            log.error("Skipping persisting the interceptedInteraction due to exception - interceptedInteraction:{}, message:{}, stackTrace:{}", interceptedInteraction, e.getMessage(), e.getStackTrace());
+        if (repositoryActive()) {
+            try {
+                interceptedInteractions.insertOne(interceptedInteraction);
+            } catch (final MongoException e) {
+                log.error("Skipping persisting the interceptedInteraction due to exception - interceptedInteraction:{}, message:{}, stackTrace:{}", interceptedInteraction, e.getMessage(), e.getStackTrace());
+            }
         }
     }
 
     @Override
     public List<InterceptedInteraction> findByTraceIds(final String... traceId) {
         final List<InterceptedInteraction> result = new ArrayList<>();
-        try (final MongoCursor<InterceptedInteraction> cursor = interceptedInteractions
-                .find(in("traceId", traceId), InterceptedInteraction.class)
-                .sort(ascending("createdAt"))
-                .iterator()) {
-            while (cursor.hasNext()) {
-                result.add(cursor.next());
+        if (repositoryActive()) {
+            try (final MongoCursor<InterceptedInteraction> cursor = interceptedInteractions
+                    .find(in("traceId", traceId), InterceptedInteraction.class)
+                    .sort(ascending("createdAt"))
+                    .iterator()) {
+                while (cursor.hasNext()) {
+                    result.add(cursor.next());
+                }
+            } catch (final MongoException e) {
+                log.error("Failed to retrieve interceptedInteractions - message:{}, stackTrace:{}", e.getMessage(), e.getStackTrace());
             }
-        } catch (final MongoException e) {
-            // TODO Should we swallow this exception?
-            log.error("Failed to retrieve interceptedInteractions - message:{}, stackTrace:{}", e.getMessage(), e.getStackTrace());
         }
         return result;
+    }
+
+    private boolean repositoryActive() {
+        if (interceptedInteractions == null) {
+            log.warn("The LSD MongoDb repository is disabled!");
+            return false;
+        }
+        return true;
     }
 }
