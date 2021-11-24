@@ -17,7 +17,7 @@ public class LibraryConfig {
     public InterceptedDocumentRepository interceptedDocumentRepository(@Value("${lsd.dist.db.connectionString}") String dbConnectionString,
                                                                        @Value("${lsd.dist.db.trustStoreLocation:#{null}}") String trustStoreLocation,
                                                                        @Value("${lsd.dist.db.trustStorePassword:#{null}}") String trustStorePassword,
-                                                                       @Value("${lsd.dist.db.connectionTimeout:#{" + DEFAULT_TIMEOUT + "}}") Integer connectionTimeout) {
+                                                                       @Value("${lsd.dist.db.connectionTimeout.millis:#{" + DEFAULT_TIMEOUT + "}}") Integer connectionTimeout) {
         return new InterceptedDocumentMongoRepository(dbConnectionString, trustStoreLocation, trustStorePassword, connectionTimeout);
     }
 }

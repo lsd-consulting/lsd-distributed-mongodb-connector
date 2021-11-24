@@ -7,6 +7,10 @@
     {
       "name": "lsd.dist.db.trustStorePassword",
       "type": "java.lang.String"
+    },
+    {
+      "name": "lsd.dist.db.connectionTimeout.millis",
+      "type": "java.lang.String"
     }
   ]
 }

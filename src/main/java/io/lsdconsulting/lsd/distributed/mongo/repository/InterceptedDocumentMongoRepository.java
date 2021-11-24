@@ -37,7 +37,7 @@ import static org.bson.codecs.pojo.PojoCodecProvider.builder;
 @Slf4j
 public class InterceptedDocumentMongoRepository implements InterceptedDocumentRepository {
 
-    public static final int DEFAULT_TIMEOUT = 1500;
+    public static final int DEFAULT_TIMEOUT = 500;
     private static final String DATABASE_NAME = "lsd";
     private static final String COLLECTION_NAME = "interceptedInteraction";
 
