@@ -7,7 +7,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.CreateCollectionOptions;
 import com.mongodb.connection.SslSettings;
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction;
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository;
@@ -28,7 +28,6 @@ import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Indexes.ascending;
 import static java.lang.System.currentTimeMillis;
-import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.bson.codecs.configuration.CodecRegistries.*;
@@ -37,7 +36,8 @@ import static org.bson.codecs.pojo.PojoCodecProvider.builder;
 @Slf4j
 public class InterceptedDocumentMongoRepository implements InterceptedDocumentRepository {
 
-    public static final int DEFAULT_TIMEOUT = 500;
+    public static final int DEFAULT_TIMEOUT_MILLIS = 500;
+    public static final long DEFAULT_COLLECTION_SIZE_LIMIT_MBS = 1000 * 10L; // 10Gb
     private static final String DATABASE_NAME = "lsd";
     private static final String COLLECTION_NAME = "interceptedInteraction";
 
@@ -49,19 +49,19 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
 
     private final MongoCollection<InterceptedInteraction> interceptedInteractions;
 
-    public InterceptedDocumentMongoRepository(final String dbConnectionString,
-                                              final Integer connectionTimeout) {
-        this(dbConnectionString, null, null, connectionTimeout);
+    public InterceptedDocumentMongoRepository(final String dbConnectionString, final Integer connectionTimeout,
+                                              final Long collectionSizeLimit) {
+        this(dbConnectionString, null, null, connectionTimeout, collectionSizeLimit);
     }
 
-    public InterceptedDocumentMongoRepository(final String dbConnectionString,
-                                              final String trustStoreLocation,
-                                              final String trustStorePassword, Integer connectionTimeout) {
+    public InterceptedDocumentMongoRepository(final String dbConnectionString, final String trustStoreLocation,
+                                              final String trustStorePassword, final Integer connectionTimeout,
+                                              final Long collectionSizeLimit) {
 
         MongoCollection<InterceptedInteraction> temp;
         try {
             final MongoClient mongoClient = prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword, connectionTimeout);
-            temp = prepareInterceptedInteractionCollection(mongoClient);
+            temp = prepareInterceptedInteractionCollection(mongoClient, collectionSizeLimit);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             temp = null;
@@ -108,13 +108,25 @@ public class InterceptedDocumentMongoRepository implements InterceptedDocumentRe
         }
     }
 
-    private MongoCollection<InterceptedInteraction> prepareInterceptedInteractionCollection(final MongoClient mongoClient) {
+    private MongoCollection<InterceptedInteraction> prepareInterceptedInteractionCollection(final MongoClient mongoClient,
+                                                                                            final Long collectionSizeLimit) {
         final MongoCollection<InterceptedInteraction> interceptedInteractions;
+
+        if (!collectionExists(mongoClient)) {
+            CreateCollectionOptions options = new CreateCollectionOptions();
+            options.capped(true).sizeInBytes(1024 * 1000 * collectionSizeLimit);
+            mongoClient.getDatabase(DATABASE_NAME).createCollection(COLLECTION_NAME, options);
+        }
+
         interceptedInteractions = mongoClient.getDatabase(DATABASE_NAME).getCollection(COLLECTION_NAME, InterceptedInteraction.class).withCodecRegistry(pojoCodecRegistry);
         interceptedInteractions.createIndex(ascending("traceId"));
-        final IndexOptions indexOptions = new IndexOptions().expireAfter(14L, DAYS);
-        interceptedInteractions.createIndex(ascending("createdAt"), indexOptions);
+        interceptedInteractions.createIndex(ascending("createdAt"));
         return interceptedInteractions;
+    }
+
+    private boolean collectionExists(MongoClient mongoClient) {
+        return mongoClient.getDatabase(DATABASE_NAME).listCollectionNames()
+                .into(new ArrayList<>()).contains(COLLECTION_NAME);
     }
 
     @Override

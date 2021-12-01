@@ -25,6 +25,7 @@ import static java.time.ZonedDateTime.ofInstant;
 import static java.util.stream.StreamSupport.stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @Import(RepositoryConfig.class)
@@ -38,7 +39,7 @@ class InterceptedDocumentMongoRepositoryIT {
 
     @BeforeEach
     void setup() {
-        underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,  1500);
+        underTest = new InterceptedDocumentMongoRepository("mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,  1500, 1L);
     }
 
     @AfterAll
@@ -56,6 +57,13 @@ class InterceptedDocumentMongoRepositoryIT {
 
         assertThat(indexNames, hasItem(startsWith("traceId")));
         assertThat(indexNames, hasItem(startsWith("createdAt")));
+    }
+
+    @Test
+    public void shouldCreateCappedCollection() {
+        final boolean isCapped = testRepository.isCollectionCapped();
+
+        assertTrue(isCapped);
     }
 
     @Test

@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.io.IOException;
 
@@ -71,5 +72,13 @@ public class TestRepository {
     public MongoCollection<Document> getCollection() {
         final MongoDatabase database = mongoClient.getDatabase(DATABASE_NAME);
         return database.getCollection(COLLECTION_NAME).withCodecRegistry(pojoCodecRegistry);
+    }
+
+    public boolean isCollectionCapped() {
+        MongoTemplate mongoTemplate = new MongoTemplate(mongoClient, DATABASE_NAME);
+        Document obj = new Document();
+        obj.append("collStats", COLLECTION_NAME);
+        Document result = mongoTemplate.executeCommand(obj);
+        return result.getBoolean("capped");
     }
 }
