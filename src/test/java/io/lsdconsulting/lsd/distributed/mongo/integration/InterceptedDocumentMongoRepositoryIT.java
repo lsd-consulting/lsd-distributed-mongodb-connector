@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.lsdconsulting.lsd.distributed.access.model.Type.REQUEST;
+import static io.lsdconsulting.lsd.distributed.access.model.InteractionType.REQUEST;
 import static io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.*;
 import static java.time.Instant.ofEpochSecond;
 import static java.time.ZonedDateTime.ofInstant;
@@ -74,7 +74,7 @@ class InterceptedDocumentMongoRepositoryIT {
                 .path("/path")
                 .httpMethod("GET")
                 .body("body")
-                .type(REQUEST)
+                .interactionType(REQUEST)
                 .traceId("traceId")
                 .createdAt(ofInstant(ofEpochSecond(0), ZoneId.of("UTC")))
                 .build();
@@ -89,7 +89,7 @@ class InterceptedDocumentMongoRepositoryIT {
         assertThat(result.get(0).getPath(), is("/path"));
         assertThat(result.get(0).getHttpMethod(), is("GET"));
         assertThat(result.get(0).getBody(), is("body"));
-        assertThat(result.get(0).getType(), is(REQUEST));
+        assertThat(result.get(0).getInteractionType(), is(REQUEST));
         assertThat(result.get(0).getCreatedAt(), is(ofInstant(ofEpochSecond(0), ZoneId.of("UTC"))));
     }
 }
