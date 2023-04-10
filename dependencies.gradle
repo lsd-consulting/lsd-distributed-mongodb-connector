@@ -1,7 +1,7 @@
 dependencies {
 
     // LSD
-    api 'io.github.lsd-consulting:lsd-distributed-data-access:0.1.4'
+    api 'io.github.lsd-consulting:lsd-distributed-data-access:0.1.6'
 
     // Spring
     api 'org.springframework.boot:spring-boot-starter-data-mongodb'
