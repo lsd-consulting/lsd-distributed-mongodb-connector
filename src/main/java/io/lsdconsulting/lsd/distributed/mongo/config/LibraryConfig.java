@@ -3,6 +3,7 @@ package io.lsdconsulting.lsd.distributed.mongo.config;
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository;
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import static io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocum
 public class LibraryConfig {
 
     @Bean
+    @ConditionalOnExpression("#{'${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
     public InterceptedDocumentRepository interceptedDocumentRepository(@Value("${lsd.dist.db.connectionString}") String dbConnectionString,
                                                                        @Value("${lsd.dist.db.trustStoreLocation:#{null}}") String trustStoreLocation,
                                                                        @Value("${lsd.dist.db.trustStorePassword:#{null}}") String trustStorePassword,
