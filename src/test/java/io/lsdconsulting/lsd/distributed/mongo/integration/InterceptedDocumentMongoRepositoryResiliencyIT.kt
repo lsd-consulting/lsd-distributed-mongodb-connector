@@ -20,10 +20,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
+import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = [TestApplication::class])
+@ActiveProfiles("test")
 internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     private val easyRandom = EasyRandom(EasyRandomParameters().seed(Instant.now().toEpochMilli()))
 

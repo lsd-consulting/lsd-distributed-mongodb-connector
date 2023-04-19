@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
 import java.time.Instant.ofEpochSecond
 import java.time.ZoneId
 import java.time.ZonedDateTime.now
@@ -33,6 +34,7 @@ import java.util.stream.StreamSupport
 
 @Import(RepositoryConfig::class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = [TestApplication::class])
+@ActiveProfiles("test")
 internal class InterceptedDocumentMongoRepositoryIT {
     private val easyRandom = EasyRandom(EasyRandomParameters().seed(System.currentTimeMillis()))
 
