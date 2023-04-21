@@ -20,7 +20,6 @@ import org.apache.http.ssl.SSLContextBuilder
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.bson.conversions.Bson.DEFAULT_CODEC_REGISTRY
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.`in`
@@ -162,7 +161,6 @@ class InterceptedDocumentMongoRepository(
         val pojoCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
             CodecRegistries.fromCodecs(ZonedDateTimeCodec(), InteractionTypeCodec()),
             getDefaultCodecRegistry(),
-            DEFAULT_CODEC_REGISTRY,
             CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()),
         )
 

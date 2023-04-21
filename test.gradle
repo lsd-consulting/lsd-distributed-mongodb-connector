@@ -3,6 +3,7 @@ dependencies {
     // Spring
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // Other
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'

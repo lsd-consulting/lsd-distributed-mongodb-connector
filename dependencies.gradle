@@ -1,11 +1,13 @@
 dependencies {
+    // Mongo
+    api 'org.litote.kmongo:kmongo:4.9.0'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-data-access:1.0.1'
 
     // Spring
-    api 'org.springframework.boot:spring-boot-starter-data-mongodb'
-    implementation 'org.litote.kmongo:kmongo:4.9.0'
+    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.7.10'
+    implementation 'org.springframework.boot:spring-boot-starter:2.7.10'
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.14' // Needed for DB connection security
