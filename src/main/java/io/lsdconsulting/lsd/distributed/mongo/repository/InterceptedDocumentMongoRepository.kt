@@ -12,24 +12,17 @@ import java.time.ZoneId
 import org.litote.kmongo.find as findMany
 
 class InterceptedDocumentMongoRepository(
-    dbConnectionString: String, trustStoreLocation: String?,
-    trustStorePassword: String?, connectionTimeout: Int,
-    collectionSizeLimit: Long,
+    interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
 ) : InterceptedDocumentRepository {
 
     private val interceptedInteractions: MongoCollection<InterceptedInteraction>?
     private lateinit var mongoClient: MongoClient
 
-    constructor(
-        dbConnectionString: String, connectionTimeout: Int,
-        collectionSizeLimit: Long
-    ) : this(dbConnectionString, null, null, connectionTimeout, collectionSizeLimit)
-
     init {
         val tempCollection: MongoCollection<InterceptedInteraction>? = try {
             mongoClient =
-                prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword, connectionTimeout)
-            prepareInterceptedInteractionCollection(mongoClient, collectionSizeLimit)
+                interceptedInteractionCollectionBuilder.prepareMongoClient()
+            interceptedInteractionCollectionBuilder.prepareInterceptedInteractionCollection(mongoClient)
         } catch (e: Exception) {
             log().error(e.message, e)
             null

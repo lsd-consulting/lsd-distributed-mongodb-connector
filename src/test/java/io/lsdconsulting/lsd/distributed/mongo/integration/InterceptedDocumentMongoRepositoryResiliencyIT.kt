@@ -2,13 +2,14 @@ package io.lsdconsulting.lsd.distributed.mongo.integration
 
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.TestApplication
-import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.MONGODB_HOST
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.MONGODB_PORT
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.setupDatabase
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownClient
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
-import org.apache.commons.lang3.RandomStringUtils
+import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
+import org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import org.awaitility.Awaitility.await
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -42,9 +43,11 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     @Test
     fun shouldHandleDbBeingDownGracefullyOnStartup() {
         InterceptedDocumentMongoRepository(
-            "mongodb://" + RandomStringUtils.randomAlphabetic(10),
-            DB_CONNECTION_TIMEOUT,
-            DB_COLLECTION_SIZE_LIMIT
+            InterceptedInteractionCollectionBuilder(
+                "mongodb://" + randomAlphabetic(10),
+                DB_CONNECTION_TIMEOUT,
+                DB_COLLECTION_SIZE_LIMIT
+            )
         )
     }
 
@@ -56,9 +59,11 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
             .untilAsserted {
                 assertThat(
                     InterceptedDocumentMongoRepository(
-                        "mongodb://" + RandomStringUtils.randomAlphabetic(10) + ":" + MONGODB_PORT,
-                        DB_CONNECTION_TIMEOUT,
-                        DB_COLLECTION_SIZE_LIMIT
+                        InterceptedInteractionCollectionBuilder(
+                            "mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT,
+                            DB_CONNECTION_TIMEOUT,
+                            DB_COLLECTION_SIZE_LIMIT
+                        )
                     ), `is`(
                         notNullValue()
                     )
@@ -69,9 +74,11 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     @Test
     fun shouldHandleDbGoingDownAfterStartup() {
         val underTest = InterceptedDocumentMongoRepository(
-            "mongodb://" + TestRepository.MONGODB_HOST + ":" + MONGODB_PORT,
-            DB_CONNECTION_TIMEOUT,
-            DB_COLLECTION_SIZE_LIMIT
+            InterceptedInteractionCollectionBuilder(
+                "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
+                DB_CONNECTION_TIMEOUT,
+                DB_COLLECTION_SIZE_LIMIT
+            )
         )
         val interceptedInteraction = easyRandom.nextObject(InterceptedInteraction::class.java)
         underTest.save(interceptedInteraction)
@@ -85,9 +92,11 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     @Test
     fun shouldRecoverFromDbGoingDown() {
         val underTest = InterceptedDocumentMongoRepository(
-            "mongodb://" + TestRepository.MONGODB_HOST + ":" + MONGODB_PORT,
-            DB_CONNECTION_TIMEOUT,
-            DB_COLLECTION_SIZE_LIMIT
+            InterceptedInteractionCollectionBuilder(
+                "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
+                DB_CONNECTION_TIMEOUT,
+                DB_COLLECTION_SIZE_LIMIT
+            )
         )
         val interceptedInteraction = easyRandom.nextObject(InterceptedInteraction::class.java)
         underTest.save(interceptedInteraction)
@@ -102,9 +111,11 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     @Test
     fun shouldNotSlowDownProduction() {
         val underTest = InterceptedDocumentMongoRepository(
-            "mongodb://" + TestRepository.MONGODB_HOST + ":" + MONGODB_PORT,
-            DB_CONNECTION_TIMEOUT,
-            DB_COLLECTION_SIZE_LIMIT
+            InterceptedInteractionCollectionBuilder(
+                "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
+                DB_CONNECTION_TIMEOUT,
+                DB_COLLECTION_SIZE_LIMIT
+            )
         )
         val interceptedInteraction = easyRandom.nextObject(InterceptedInteraction::class.java)
         underTest.save(interceptedInteraction)

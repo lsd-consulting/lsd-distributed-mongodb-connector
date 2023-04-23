@@ -9,6 +9,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownClient
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
+import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.bson.Document
 import org.hamcrest.MatcherAssert.assertThat
@@ -44,9 +45,11 @@ internal class InterceptedDocumentMongoRepositoryIT {
     @BeforeEach
     fun setup() {
         underTest = InterceptedDocumentMongoRepository(
-            "mongodb://" + TestRepository.MONGODB_HOST + ":" + TestRepository.MONGODB_PORT,
-            1500,
-            1L
+            InterceptedInteractionCollectionBuilder(
+                "mongodb://" + TestRepository.MONGODB_HOST + ":" + TestRepository.MONGODB_PORT,
+                1500,
+                1L
+            )
         )
     }
 
@@ -76,7 +79,8 @@ internal class InterceptedDocumentMongoRepositoryIT {
             body = "body",
             interactionType = InteractionType.REQUEST,
             traceId = "traceId",
-            createdAt = ofInstant(ofEpochSecond(0), ZoneId.of("UTC")))
+            createdAt = ofInstant(ofEpochSecond(0), ZoneId.of("UTC"))
+        )
 
         underTest.save(interceptedInteraction)
 
@@ -120,7 +124,7 @@ internal class InterceptedDocumentMongoRepositoryIT {
 
         val result = underTest.findByTraceIds(traceId)
         assertThat(result, hasSize(10))
-        (1..10).forEach { assertThat(result[it -1].createdAt, `is`(interceptedInteractions[10 - it].createdAt)) }
+        (1..10).forEach { assertThat(result[it - 1].createdAt, `is`(interceptedInteractions[10 - it].createdAt)) }
     }
 
     private fun buildInterceptedInteraction(traceId: String) = easyRandom.nextObject(InterceptedInteraction::class.java)

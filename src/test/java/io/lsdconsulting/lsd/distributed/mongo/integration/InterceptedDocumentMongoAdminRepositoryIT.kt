@@ -9,6 +9,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoAdminRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
+import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
 import org.apache.commons.lang3.RandomStringUtils
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -47,13 +48,17 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
     @BeforeEach
     fun setup() {
         underTest = InterceptedDocumentMongoAdminRepository(
-            "mongodb://" + TestRepository.MONGODB_HOST + ":" + TestRepository.MONGODB_PORT,
-            1500,
-            1L,
-            InterceptedDocumentMongoRepository(
+            InterceptedInteractionCollectionBuilder(
                 "mongodb://" + TestRepository.MONGODB_HOST + ":" + TestRepository.MONGODB_PORT,
                 1500,
-                1L
+                1L,
+            ),
+            InterceptedDocumentMongoRepository(
+                InterceptedInteractionCollectionBuilder(
+                    "mongodb://" + TestRepository.MONGODB_HOST + ":" + TestRepository.MONGODB_PORT,
+                    1500,
+                    1L
+                )
             )
         )
         testRepository.deleteAll()

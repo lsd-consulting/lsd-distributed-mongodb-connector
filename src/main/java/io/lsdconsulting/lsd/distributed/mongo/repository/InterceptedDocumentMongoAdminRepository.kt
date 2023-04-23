@@ -8,9 +8,8 @@ import io.lsdconsulting.lsd.distributed.mongo.config.log
 import org.bson.Document
 
 class InterceptedDocumentMongoAdminRepository(
-    dbConnectionString: String, trustStoreLocation: String?,
-    trustStorePassword: String?, connectionTimeout: Int,
-    collectionSizeLimit: Long, private val interceptedDocumentRepository: InterceptedDocumentRepository
+    interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
+    private val interceptedDocumentRepository: InterceptedDocumentRepository
 ) : InterceptedDocumentAdminRepository {
 
     private val interceptedInteractions: MongoCollection<Document>
@@ -40,16 +39,11 @@ class InterceptedDocumentMongoAdminRepository(
         }
     }
 
-    constructor(
-        dbConnectionString: String, connectionTimeout: Int,
-        collectionSizeLimit: Long, interceptedDocumentRepository: InterceptedDocumentRepository
-    ) : this(dbConnectionString, null, null, connectionTimeout, collectionSizeLimit, interceptedDocumentRepository)
-
     init {
         interceptedInteractions = try {
             val mongoClient =
-                prepareMongoClient(dbConnectionString, trustStoreLocation, trustStorePassword, connectionTimeout)
-            prepareInterceptedInteractionCollection(mongoClient, collectionSizeLimit)
+                interceptedInteractionCollectionBuilder.prepareMongoClient()
+            interceptedInteractionCollectionBuilder.prepareInterceptedInteractionCollection(mongoClient)
         } catch (e: Exception) {
             log().error(e.message, e)
             throw e

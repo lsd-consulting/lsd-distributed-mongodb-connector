@@ -1,10 +1,7 @@
 package io.lsdconsulting.lsd.distributed.mongo.config
 
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
-import io.lsdconsulting.lsd.distributed.mongo.repository.DEFAULT_COLLECTION_SIZE_LIMIT_MBS
-import io.lsdconsulting.lsd.distributed.mongo.repository.DEFAULT_TIMEOUT_MILLIS
-import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoAdminRepository
-import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
+import io.lsdconsulting.lsd.distributed.mongo.repository.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -17,38 +14,34 @@ open class LibraryConfig {
     @Bean
     @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentRepository(
-        @Value("\${lsd.dist.db.connectionString}") dbConnectionString: String,
-        @Value("\${lsd.dist.db.trustStoreLocation:#{null}}") trustStoreLocation: String?,
-        @Value("\${lsd.dist.db.trustStorePassword:#{null}}") trustStorePassword: String?,
-        @Value("\${lsd.dist.db.connectionTimeout.millis:#{" + DEFAULT_TIMEOUT_MILLIS + "}}") connectionTimeout: Int,
-        @Value("\${lsd.dist.db.collectionSizeLimit.megabytes:#{" + DEFAULT_COLLECTION_SIZE_LIMIT_MBS + "}}") collectionSizeLimit: Long
-    ): InterceptedDocumentRepository {
-        return InterceptedDocumentMongoRepository(
-            dbConnectionString,
-            trustStoreLocation,
-            trustStorePassword,
-            connectionTimeout,
-            collectionSizeLimit
-        )
-    }
+        interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
+    ) = InterceptedDocumentMongoRepository(
+        interceptedInteractionCollectionBuilder
+    )
 
     @Bean
     @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentAdminRepository(
+        interceptedDocumentRepository: InterceptedDocumentRepository,
+        interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
+    ) = InterceptedDocumentMongoAdminRepository(
+            interceptedInteractionCollectionBuilder, interceptedDocumentRepository
+        )
+
+    @Bean
+    @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
+    open fun interceptedInteractionCollectionBuilder(
         @Value("\${lsd.dist.db.connectionString}") dbConnectionString: String,
         @Value("\${lsd.dist.db.trustStoreLocation:#{null}}") trustStoreLocation: String?,
         @Value("\${lsd.dist.db.trustStorePassword:#{null}}") trustStorePassword: String?,
         @Value("\${lsd.dist.db.connectionTimeout.millis:#{" + DEFAULT_TIMEOUT_MILLIS + "}}") connectionTimeout: Int,
         @Value("\${lsd.dist.db.collectionSizeLimit.megabytes:#{" + DEFAULT_COLLECTION_SIZE_LIMIT_MBS + "}}") collectionSizeLimit: Long,
         interceptedDocumentRepository: InterceptedDocumentRepository
-    ): InterceptedDocumentMongoAdminRepository {
-        return InterceptedDocumentMongoAdminRepository(
-            dbConnectionString,
-            trustStoreLocation,
-            trustStorePassword,
-            connectionTimeout,
-            collectionSizeLimit,
-            interceptedDocumentRepository
-        )
-    }
+    ): InterceptedInteractionCollectionBuilder = InterceptedInteractionCollectionBuilder(
+        dbConnectionString,
+        trustStoreLocation,
+        trustStorePassword,
+        connectionTimeout,
+        collectionSizeLimit
+    )
 }
