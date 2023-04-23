@@ -5,6 +5,7 @@ import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.TestApplication
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.config.RepositoryConfig
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository
+import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.setupDatabase
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownClient
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
@@ -14,10 +15,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.jeasy.random.EasyRandom
 import org.jeasy.random.EasyRandomParameters
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
@@ -129,6 +127,12 @@ internal class InterceptedDocumentMongoRepositoryIT {
         .copy(traceId = traceId, createdAt = now(ZoneId.of("UTC")).truncatedTo(ChronoUnit.MILLIS))
 
     companion object {
+        @JvmStatic
+        @BeforeAll
+        fun setUp() {
+            setupDatabase()
+        }
+
         @JvmStatic
         @AfterAll
         fun tearDown() {
