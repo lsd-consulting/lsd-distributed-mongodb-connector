@@ -36,7 +36,6 @@ open class LibraryConfig {
         @Value("\${lsd.dist.db.trustStorePassword:#{null}}") trustStorePassword: String?,
         @Value("\${lsd.dist.db.connectionTimeout.millis:#{" + DEFAULT_TIMEOUT_MILLIS + "}}") connectionTimeout: Int,
         @Value("\${lsd.dist.db.collectionSizeLimit.megabytes:#{" + DEFAULT_COLLECTION_SIZE_LIMIT_MBS + "}}") collectionSizeLimit: Long,
-        interceptedDocumentRepository: InterceptedDocumentRepository
     ): InterceptedInteractionCollectionBuilder = InterceptedInteractionCollectionBuilder(
         dbConnectionString,
         trustStoreLocation,
