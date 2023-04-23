@@ -24,8 +24,7 @@ class InterceptedDocumentMongoAdminRepository(
 
         val distinctTraceIds = mutableSetOf<String>()
         while (interceptedInteractionIterator.hasNext() && distinctTraceIds.size < resultSizeLimit) {
-            val traceId: String = interceptedInteractionIterator.next().getString("traceId")
-            distinctTraceIds.add(traceId)
+            distinctTraceIds.add(interceptedInteractionIterator.next().getString("traceId"))
         }
         val interactionsGroupedByTraceId = interceptedDocumentRepository
             .findByTraceIds(*distinctTraceIds.toTypedArray()).groupBy { it.traceId }
@@ -41,9 +40,7 @@ class InterceptedDocumentMongoAdminRepository(
 
     init {
         interceptedInteractions = try {
-            val mongoClient =
-                interceptedInteractionCollectionBuilder.prepareMongoClient()
-            interceptedInteractionCollectionBuilder.prepareInterceptedInteractionCollection(mongoClient)
+            interceptedInteractionCollectionBuilder.get()
         } catch (e: Exception) {
             log().error(e.message, e)
             throw e

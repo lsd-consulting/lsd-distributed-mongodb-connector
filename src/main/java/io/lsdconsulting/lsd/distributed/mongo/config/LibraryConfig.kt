@@ -25,8 +25,8 @@ open class LibraryConfig {
         interceptedDocumentRepository: InterceptedDocumentRepository,
         interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
     ) = InterceptedDocumentMongoAdminRepository(
-            interceptedInteractionCollectionBuilder, interceptedDocumentRepository
-        )
+        interceptedInteractionCollectionBuilder, interceptedDocumentRepository
+    )
 
     @Bean
     @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")

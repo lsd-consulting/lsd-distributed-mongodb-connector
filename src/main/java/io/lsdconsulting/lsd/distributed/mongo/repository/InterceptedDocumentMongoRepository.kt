@@ -1,12 +1,10 @@
 package io.lsdconsulting.lsd.distributed.mongo.repository
 
 import com.mongodb.MongoException
-import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoCollection
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
 import io.lsdconsulting.lsd.distributed.mongo.config.log
-import org.litote.kmongo.getCollection
 import org.litote.kmongo.`in`
 import java.time.ZoneId
 import org.litote.kmongo.find as findMany
@@ -16,13 +14,10 @@ class InterceptedDocumentMongoRepository(
 ) : InterceptedDocumentRepository {
 
     private val interceptedInteractions: MongoCollection<InterceptedInteraction>?
-    private lateinit var mongoClient: MongoClient
 
     init {
         val tempCollection: MongoCollection<InterceptedInteraction>? = try {
-            mongoClient =
-                interceptedInteractionCollectionBuilder.prepareMongoClient()
-            interceptedInteractionCollectionBuilder.prepareInterceptedInteractionCollection(mongoClient)
+            interceptedInteractionCollectionBuilder.getInterceptedInteractionCollection()
         } catch (e: Exception) {
             log().error(e.message, e)
             null
@@ -50,13 +45,9 @@ class InterceptedDocumentMongoRepository(
     override fun findByTraceIds(vararg traceId: String): List<InterceptedInteraction> {
         if (isActive()) {
             val startTime = System.currentTimeMillis()
-
-            val database = mongoClient.getDatabase(DATABASE_NAME) //normal java driver usage
-            val col = database.getCollection<InterceptedInteraction>(COLLECTION_NAME) //KMongo extension method
-
             try {
-
-                val result = col.findMany(InterceptedInteraction::traceId `in` traceId.asList())
+                val result = interceptedInteractions!!
+                    .findMany(InterceptedInteraction::traceId `in` traceId.asList())
                     .toList()
                     .sortedBy { it.createdAt }
                     .map { it.copy(createdAt = it.createdAt.withZoneSameInstant(ZoneId.of("UTC"))) }

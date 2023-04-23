@@ -9,6 +9,7 @@ import com.mongodb.client.model.Indexes
 import com.mongodb.connection.ClusterSettings
 import com.mongodb.connection.SocketSettings
 import com.mongodb.connection.SslSettings
+import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.InteractionTypeCodec
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec
 import org.apache.http.ssl.SSLContextBuilder
@@ -16,9 +17,10 @@ import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.configuration.CodecRegistry
 import org.bson.codecs.pojo.PojoCodecProvider
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
 import org.springframework.core.io.ClassPathResource
 import java.security.KeyStore
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 const val DATABASE_NAME = "lsd"
 const val COLLECTION_NAME = "interceptedInteraction"
@@ -26,9 +28,9 @@ const val DEFAULT_TIMEOUT_MILLIS = 500
 const val DEFAULT_COLLECTION_SIZE_LIMIT_MBS = 1000 * 10L // 10Gb
 
 class InterceptedInteractionCollectionBuilder(
-    val dbConnectionString: String, val trustStoreLocation: String?,
-    val trustStorePassword: String?, val connectionTimeout: Int,
-    val collectionSizeLimit: Long
+    private val dbConnectionString: String, private val trustStoreLocation: String?,
+    private val trustStorePassword: String?, private val connectionTimeout: Int,
+    private val collectionSizeLimit: Long
 ) {
     val pojoCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
         CodecRegistries.fromCodecs(ZonedDateTimeCodec(), InteractionTypeCodec()),
@@ -39,14 +41,11 @@ class InterceptedInteractionCollectionBuilder(
     fun prepareMongoClient(): MongoClient {
         val builder = MongoClientSettings.builder()
             .applyToSocketSettings { b: SocketSettings.Builder ->
-                b.connectTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
-                b.readTimeout(connectionTimeout, TimeUnit.MILLISECONDS)
+                b.connectTimeout(connectionTimeout, MILLISECONDS)
+                b.readTimeout(connectionTimeout, MILLISECONDS)
             }
             .applyToClusterSettings { b: ClusterSettings.Builder ->
-                b.serverSelectionTimeout(
-                    connectionTimeout.toLong(),
-                    TimeUnit.MILLISECONDS
-                )
+                b.serverSelectionTimeout(connectionTimeout.toLong(), MILLISECONDS)
             }
             .applyConnectionString(ConnectionString(dbConnectionString))
         if (!trustStoreLocation.isNullOrBlank() && !trustStorePassword.isNullOrBlank()) {
@@ -63,31 +62,43 @@ class InterceptedInteractionCollectionBuilder(
         return KMongo.createClient(builder.retryWrites(true).build())
     }
 
-    inline fun <reified T> prepareInterceptedInteractionCollection(
-        mongoClient: MongoClient): MongoCollection<T> {
-        if (!collectionExists(mongoClient)) {
-            val options = CreateCollectionOptions()
-            options.capped(true).sizeInBytes(1024 * 1000 * collectionSizeLimit)
-            mongoClient.getDatabase(DATABASE_NAME).createCollection(
-                COLLECTION_NAME, options
-            )
-        }
-        val interceptedInteractions: MongoCollection<T> =
-            mongoClient.getDatabase(DATABASE_NAME).getCollection(
-                COLLECTION_NAME, T::class.java
-            )
+    inline fun <reified T> get(): MongoCollection<T> {
+        val mongoClient = prepareMongoClient()
+        createCappedCollectionIdMissing(mongoClient)
+        val interceptedInteractions = mongoClient
+                .getDatabase(DATABASE_NAME)
+                .getCollection(COLLECTION_NAME, T::class.java)
                 .withCodecRegistry(pojoCodecRegistry)
         interceptedInteractions.createIndex(Indexes.ascending("traceId"))
         interceptedInteractions.createIndex(Indexes.ascending("createdAt"))
         return interceptedInteractions
     }
 
-    fun collectionExists(mongoClient: MongoClient): Boolean =
+    fun getInterceptedInteractionCollection(): MongoCollection<InterceptedInteraction> {
+        val mongoClient = prepareMongoClient()
+        createCappedCollectionIdMissing(mongoClient)
+        val interceptedInteractions = mongoClient
+                .getDatabase(DATABASE_NAME)
+                .getCollection<InterceptedInteraction>(COLLECTION_NAME)
+        interceptedInteractions.createIndex(Indexes.ascending("traceId"))
+        interceptedInteractions.createIndex(Indexes.ascending("createdAt"))
+        return interceptedInteractions
+    }
+
+    fun createCappedCollectionIdMissing(mongoClient: MongoClient) {
+        if (!collectionExists(mongoClient)) {
+            val options = CreateCollectionOptions()
+            options.capped(true).sizeInBytes(1024 * 1000 * collectionSizeLimit)
+            mongoClient.getDatabase(DATABASE_NAME).createCollection(COLLECTION_NAME, options)
+        }
+    }
+
+    private fun collectionExists(mongoClient: MongoClient): Boolean =
         mongoClient.getDatabase(DATABASE_NAME).listCollectionNames()
             .into(ArrayList()).contains(COLLECTION_NAME)
 
 
-    fun loadCustomTrustStore(
+    private fun loadCustomTrustStore(
         builder: SslSettings.Builder,
         trustStoreLocation: String,
         trustStorePassword: String
