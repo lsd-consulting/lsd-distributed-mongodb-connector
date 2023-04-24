@@ -17,13 +17,14 @@ class InterceptedDocumentMongoAdminRepository(
     override fun findRecentFlows(resultSizeLimit: Int): List<InterceptedFlow> {
 
         val interceptedInteractionIterator = interceptedInteractions.find()
+            .limit(resultSizeLimit)
             .sort(Document("createdAt", -1))
             .projection(Document("traceId", 1))
             .distinct()
             .iterator()
 
         val distinctTraceIds = mutableSetOf<String>()
-        while (interceptedInteractionIterator.hasNext() && distinctTraceIds.size < resultSizeLimit) {
+        while (interceptedInteractionIterator.hasNext()) {
             distinctTraceIds.add(interceptedInteractionIterator.next().getString("traceId"))
         }
         val interactionsGroupedByTraceId = interceptedDocumentRepository
