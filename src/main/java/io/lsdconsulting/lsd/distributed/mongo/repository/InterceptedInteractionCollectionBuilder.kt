@@ -71,6 +71,7 @@ class InterceptedInteractionCollectionBuilder(
                 .withCodecRegistry(pojoCodecRegistry)
         interceptedInteractions.createIndex(Indexes.ascending("traceId"))
         interceptedInteractions.createIndex(Indexes.ascending("createdAt"))
+        interceptedInteractions.createIndex(Indexes.descending("createdAt"))
         return interceptedInteractions
     }
 
