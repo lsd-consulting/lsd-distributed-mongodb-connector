@@ -144,6 +144,27 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
         assertThat(result[1].totalCapturedInteractions, `is`(2))
     }
 
+    @Test
+    fun `should respect the resultSizeLimit`() {
+        val mainFlowInitialInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
+        testRepository.save(mainFlowInitialInterceptedInteraction)
+        val secondaryFlowInitialInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
+        testRepository.save(secondaryFlowInitialInterceptedInteraction)
+        testRepository.save(buildInterceptedInteraction(primaryTraceId))
+        val secondaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
+        testRepository.save(secondaryFlowFinalInterceptedInteraction)
+        testRepository.save(buildInterceptedInteraction(primaryTraceId))
+        val primaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
+        testRepository.save(primaryFlowFinalInterceptedInteraction)
+
+        val result = underTest.findRecentFlows(1)
+
+        assertThat(result, hasSize(1))
+        assertThat(result[0].initialInteraction, `is`(mainFlowInitialInterceptedInteraction))
+        assertThat(result[0].finalInteraction, `is`(primaryFlowFinalInterceptedInteraction))
+        assertThat(result[0].totalCapturedInteractions, `is`(4))
+    }
+
     private fun buildInterceptedInteraction(traceId: String) = easyRandom.nextObject(InterceptedInteraction::class.java)
         .copy(traceId = traceId, createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS))
 
