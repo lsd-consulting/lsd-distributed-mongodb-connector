@@ -1,11 +1,15 @@
 package io.lsdconsulting.lsd.distributed.mongo.repository
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Aggregates.*
+import com.mongodb.client.model.Projections.*
+import com.mongodb.client.model.Sorts.descending
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedFlow
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentAdminRepository
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
 import io.lsdconsulting.lsd.distributed.mongo.config.log
 import org.bson.Document
+
 
 class InterceptedDocumentMongoAdminRepository(
     interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
@@ -16,19 +20,18 @@ class InterceptedDocumentMongoAdminRepository(
 
     override fun findRecentFlows(resultSizeLimit: Int): List<InterceptedFlow> {
 
-        val interceptedInteractionIterator = interceptedInteractions.find()
-            .limit(resultSizeLimit)
-            .sort(Document("createdAt", -1))
-            .projection(Document("traceId", 1))
-            .distinct()
-            .iterator()
+        val project = project(fields(excludeId(), include("traceId")))
+        val sort = sort(descending("createdAt"))
+        val limit = limit(resultSizeLimit)
 
-        val distinctTraceIds = mutableSetOf<String>()
-        while (interceptedInteractionIterator.hasNext()) {
-            distinctTraceIds.add(interceptedInteractionIterator.next().getString("traceId"))
-        }
+        val distinctTraceIds = interceptedInteractions
+            .aggregate(listOf(project, sort, limit))
+            .into(LinkedHashSet<Document>())
+            .map { it.getString("traceId") }
+
         val interactionsGroupedByTraceId = interceptedDocumentRepository
-            .findByTraceIds(*distinctTraceIds.toTypedArray()).groupBy { it.traceId }
+            .findByTraceIds(*distinctTraceIds.toTypedArray())
+            .groupBy { it.traceId }
 
         return interactionsGroupedByTraceId.values.map {
             InterceptedFlow(
