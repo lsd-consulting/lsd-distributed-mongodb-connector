@@ -6,14 +6,13 @@ import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Sorts.descending
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedFlow
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentAdminRepository
-import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
 import io.lsdconsulting.lsd.distributed.mongo.config.log
 import org.bson.Document
 
 
 class InterceptedDocumentMongoAdminRepository(
     interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
-    private val interceptedDocumentRepository: InterceptedDocumentRepository
+    private val interceptedDocumentRepository: InterceptedDocumentMongoRepository
 ) : InterceptedDocumentAdminRepository {
 
     private val interceptedInteractions: MongoCollection<Document>
@@ -31,14 +30,13 @@ class InterceptedDocumentMongoAdminRepository(
             .map { it.getString("_id") }
 
         val interactionsGroupedByTraceId = interceptedDocumentRepository
-            .findByTraceIds(*distinctTraceIds.toTypedArray())
-            .sortedByDescending { it.createdAt }
+            .findByTraceIdsUnsorted(*distinctTraceIds.toTypedArray())
             .groupBy { it.traceId }
 
         return interactionsGroupedByTraceId.values.map {
             InterceptedFlow(
-                initialInteraction = it.first(),
-                finalInteraction = it.last(),
+                initialInteraction = it.minBy { x -> x.createdAt },
+                finalInteraction = it.maxBy { x -> x.createdAt },
                 totalCapturedInteractions = it.size
             )
         }

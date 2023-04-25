@@ -1,6 +1,5 @@
 package io.lsdconsulting.lsd.distributed.mongo.config
 
-import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.*
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
@@ -22,7 +21,7 @@ open class LibraryConfig {
     @Bean
     @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentAdminRepository(
-        interceptedDocumentRepository: InterceptedDocumentRepository,
+        interceptedDocumentRepository: InterceptedDocumentMongoRepository, // TODO Replace with the interface
         interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
     ) = InterceptedDocumentMongoAdminRepository(
         interceptedInteractionCollectionBuilder, interceptedDocumentRepository

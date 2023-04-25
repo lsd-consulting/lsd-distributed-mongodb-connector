@@ -75,7 +75,7 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
             target = targetName,
             interactionType = InteractionType.REQUEST,
             elapsedTime = 0,
-            createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+            createdAt = now(ZoneId.of("UTC")).minusSeconds(4).truncatedTo(MILLIS)
         )
         testRepository.save(initialInterceptedInteraction)
 
@@ -87,7 +87,7 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
                 interactionType = InteractionType.RESPONSE,
                 elapsedTime = 10L,
                 httpStatus = "200 OK",
-                createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+                createdAt = now(ZoneId.of("UTC")).minusSeconds(3).truncatedTo(MILLIS)
             )
         )
         testRepository.save(
@@ -99,9 +99,10 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
                 target = "UNKNOWN_TARGET",
                 interactionType = InteractionType.REQUEST,
                 elapsedTime = 0,
-                createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+                createdAt = now(ZoneId.of("UTC")).minusSeconds(2).truncatedTo(MILLIS)
             )
         )
+
         val finalInterceptedInteraction = InterceptedInteraction(
             traceId = primaryTraceId,
             serviceName = "TestApp",
@@ -109,7 +110,7 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
             interactionType = InteractionType.RESPONSE,
             elapsedTime = 20L,
             httpStatus = "200 OK",
-            createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+            createdAt = now(ZoneId.of("UTC")).minusSeconds(1).truncatedTo(MILLIS)
         )
         testRepository.save(finalInterceptedInteraction)
 
@@ -123,21 +124,18 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     @Test
     fun `should distinguish flows`() {
-        val mainFlowInitialInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
-        testRepository.save(mainFlowInitialInterceptedInteraction)
-        val secondaryFlowInitialInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
-        testRepository.save(secondaryFlowInitialInterceptedInteraction)
-        testRepository.save(buildInterceptedInteraction(primaryTraceId))
-        val secondaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
-        testRepository.save(secondaryFlowFinalInterceptedInteraction)
-        testRepository.save(buildInterceptedInteraction(primaryTraceId))
-        val primaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
-        testRepository.save(primaryFlowFinalInterceptedInteraction)
+        val now = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+        val primaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(1))
+        val secondaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(2))
+        saveInterceptedInteraction(primaryTraceId, now.plusSeconds(3))
+        val secondaryFlowFinalInterceptedInteraction = saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(4))
+        saveInterceptedInteraction(primaryTraceId, now.plusSeconds(5))
+        val primaryFlowFinalInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(6))
 
         val result = underTest.findRecentFlows(2)
 
         assertThat(result, hasSize(2))
-        assertThat(result[0].initialInteraction, `is`(mainFlowInitialInterceptedInteraction))
+        assertThat(result[0].initialInteraction, `is`(primaryFlowInitialInterceptedInteraction))
         assertThat(result[0].finalInteraction, `is`(primaryFlowFinalInterceptedInteraction))
         assertThat(result[0].totalCapturedInteractions, `is`(4))
         assertThat(result[1].initialInteraction, `is`(secondaryFlowInitialInterceptedInteraction))
@@ -147,21 +145,18 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     @Test
     fun `should respect the resultSizeLimit`() {
-        val mainFlowInitialInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
-        testRepository.save(mainFlowInitialInterceptedInteraction)
-        val secondaryFlowInitialInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
-        testRepository.save(secondaryFlowInitialInterceptedInteraction)
-        testRepository.save(buildInterceptedInteraction(primaryTraceId))
-        val secondaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(secondaryTraceId)
-        testRepository.save(secondaryFlowFinalInterceptedInteraction)
-        testRepository.save(buildInterceptedInteraction(primaryTraceId))
-        val primaryFlowFinalInterceptedInteraction = buildInterceptedInteraction(primaryTraceId)
-        testRepository.save(primaryFlowFinalInterceptedInteraction)
+        val now = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
+        val primaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(1))
+        saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(2))
+        saveInterceptedInteraction(primaryTraceId, now.plusSeconds(3))
+        saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(4))
+        saveInterceptedInteraction(primaryTraceId, now.plusSeconds(5))
+        val primaryFlowFinalInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(6))
 
         val result = underTest.findRecentFlows(1)
 
         assertThat(result, hasSize(1))
-        assertThat(result[0].initialInteraction, `is`(mainFlowInitialInterceptedInteraction))
+        assertThat(result[0].initialInteraction, `is`(primaryFlowInitialInterceptedInteraction))
         assertThat(result[0].finalInteraction, `is`(primaryFlowFinalInterceptedInteraction))
         assertThat(result[0].totalCapturedInteractions, `is`(4))
     }
@@ -187,13 +182,59 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
         assertThat(result[1].initialInteraction.traceId, `is`(traceId2))
     }
 
-    private fun buildInterceptedInteraction(traceId: String) = easyRandom.nextObject(InterceptedInteraction::class.java)
-        .copy(traceId = traceId, createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS))
+    @Test
+    fun `should retrieve recent flows according to createdAt 2`() {
+        val traceId1 = "traceId1"
+        val traceId2 = "traceId2"
+        val traceId3 = "traceId3"
+        val traceId4 = "traceId4"
+        val traceId5 = "traceId5"
+        val now = now(ZoneId.of("UTC"))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(55))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(54))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(53))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(52))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(51))
 
-    private fun saveInterceptedInteraction(traceId: String, createdAt: ZonedDateTime) {
+        saveInterceptedInteraction(traceId2, now.plusSeconds(45))
+        saveInterceptedInteraction(traceId2, now.plusSeconds(44))
+        saveInterceptedInteraction(traceId2, now.plusSeconds(43))
+        saveInterceptedInteraction(traceId2, now.plusSeconds(42))
+        saveInterceptedInteraction(traceId2, now.plusSeconds(41))
+
+        saveInterceptedInteraction(traceId3, now.plusSeconds(35))
+        saveInterceptedInteraction(traceId3, now.plusSeconds(34))
+        saveInterceptedInteraction(traceId3, now.plusSeconds(33))
+        saveInterceptedInteraction(traceId3, now.plusSeconds(32))
+        saveInterceptedInteraction(traceId3, now.plusSeconds(31))
+
+        saveInterceptedInteraction(traceId4, now.plusSeconds(25))
+        saveInterceptedInteraction(traceId4, now.plusSeconds(24))
+        saveInterceptedInteraction(traceId4, now.plusSeconds(23))
+        saveInterceptedInteraction(traceId4, now.plusSeconds(22))
+        saveInterceptedInteraction(traceId4, now.plusSeconds(21))
+
+        saveInterceptedInteraction(traceId5, now.plusSeconds(15))
+        saveInterceptedInteraction(traceId5, now.plusSeconds(14))
+        saveInterceptedInteraction(traceId5, now.plusSeconds(13))
+        saveInterceptedInteraction(traceId5, now.plusSeconds(12))
+        saveInterceptedInteraction(traceId5, now.plusSeconds(11))
+
+        val result = underTest.findRecentFlows(2)
+
+        assertThat(result, hasSize(2))
+        assertThat(result[0].initialInteraction.traceId, `is`(traceId1))
+        assertThat(result[0].initialInteraction.createdAt, `is`(now.plusSeconds(51).truncatedTo(MILLIS)))
+        assertThat(result[0].finalInteraction.createdAt, `is`(now.plusSeconds(55).truncatedTo(MILLIS)))
+        assertThat(result[1].initialInteraction.traceId, `is`(traceId2))
+        assertThat(result[1].initialInteraction.createdAt, `is`(now.plusSeconds(41).truncatedTo(MILLIS)))
+        assertThat(result[1].finalInteraction.createdAt, `is`(now.plusSeconds(45).truncatedTo(MILLIS)))
+    }
+
+    private fun saveInterceptedInteraction(traceId: String, createdAt: ZonedDateTime) =
         testRepository.save(easyRandom.nextObject(InterceptedInteraction::class.java)
             .copy(traceId = traceId, createdAt = createdAt.truncatedTo(MILLIS)))
-    }
+
 
     companion object {
         @JvmStatic

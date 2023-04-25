@@ -41,7 +41,7 @@ class TestRepository {
             return result.getBoolean("capped")
         }
 
-    fun save(interceptedInteraction: InterceptedInteraction) {
+    fun save(interceptedInteraction: InterceptedInteraction): InterceptedInteraction {
         val database = mongoClient.getDatabase(DATABASE_NAME)
         val collection = database.getCollection(COLLECTION_NAME).withCodecRegistry(pojoCodecRegistry)
         val document = Document("_id", ObjectId())
@@ -59,6 +59,7 @@ class TestRepository {
             .append("elapsedTime", interceptedInteraction.elapsedTime)
             .append("createdAt", interceptedInteraction.createdAt)
         collection.insertOne(document)
+        return interceptedInteraction
     }
 
     fun deleteAll() {

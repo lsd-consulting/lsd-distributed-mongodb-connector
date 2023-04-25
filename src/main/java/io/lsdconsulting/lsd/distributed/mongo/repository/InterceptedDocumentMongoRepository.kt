@@ -61,6 +61,24 @@ class InterceptedDocumentMongoRepository(
         return listOf()
     }
 
+    fun findByTraceIdsUnsorted(vararg traceId: String): List<InterceptedInteraction> {
+        if (isActive()) {
+            val startTime = System.currentTimeMillis()
+            try {
+                val result = interceptedInteractions!!
+                    .findMany(InterceptedInteraction::traceId `in` traceId.asList())
+                    .toList()
+                    .map { it.copy(createdAt = it.createdAt.withZoneSameInstant(ZoneId.of("UTC"))) }
+
+                log().trace("findByTraceIds took {} ms", System.currentTimeMillis() - startTime)
+                return result
+            } catch (e: MongoException) {
+                log().error("Failed to retrieve interceptedInteractions - message:${e.message}", e.stackTrace)
+            }
+        }
+        return listOf()
+    }
+
     override fun isActive(): Boolean {
         return if (interceptedInteractions == null) {
             log().warn("The LSD MongoDb repository is disabled!")
