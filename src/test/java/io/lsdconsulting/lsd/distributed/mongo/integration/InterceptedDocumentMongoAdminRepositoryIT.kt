@@ -10,7 +10,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoAdminRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
-import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.jeasy.random.EasyRandom
@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment
 import org.springframework.context.annotation.Import
 import org.springframework.test.context.ActiveProfiles
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.time.temporal.ChronoUnit.MILLIS
 import java.util.*
@@ -40,10 +41,10 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     private lateinit var underTest: InterceptedDocumentMongoAdminRepository
 
-    private val secondaryTraceId = RandomStringUtils.randomAlphanumeric(10)
-    private val primaryTraceId = RandomStringUtils.randomAlphanumeric(10)
-    private val sourceName = RandomStringUtils.randomAlphanumeric(10).uppercase(Locale.getDefault())
-    private val targetName = RandomStringUtils.randomAlphanumeric(10).uppercase(Locale.getDefault())
+    private val secondaryTraceId = randomAlphanumeric(10)
+    private val primaryTraceId = randomAlphanumeric(10)
+    private val sourceName = randomAlphanumeric(10).uppercase(Locale.getDefault())
+    private val targetName = randomAlphanumeric(10).uppercase(Locale.getDefault())
 
     @BeforeEach
     fun setup() {
@@ -65,7 +66,7 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
     }
 
     @Test
-    fun `should retrieve recent flow`() {
+    fun `should retrieve flows`() {
         val initialInterceptedInteraction = InterceptedInteraction(
             traceId = primaryTraceId,
             httpMethod = "GET",
@@ -165,8 +166,34 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
         assertThat(result[0].totalCapturedInteractions, `is`(4))
     }
 
+    @Test
+    fun `should retrieve recent flows according to createdAt`() {
+        val traceId1 = "traceId1"
+        val traceId2 = "traceId2"
+        val traceId3 = "traceId3"
+        val traceId4 = "traceId4"
+        val traceId5 = "traceId5"
+        val now = now(ZoneId.of("UTC"))
+        saveInterceptedInteraction(traceId1, now.plusSeconds(5))
+        saveInterceptedInteraction(traceId2, now.plusSeconds(4))
+        saveInterceptedInteraction(traceId3, now.plusSeconds(3))
+        saveInterceptedInteraction(traceId4, now.plusSeconds(2))
+        saveInterceptedInteraction(traceId5, now.plusSeconds(1))
+
+        val result = underTest.findRecentFlows(2)
+
+        assertThat(result, hasSize(2))
+        assertThat(result[0].initialInteraction.traceId, `is`(traceId1))
+        assertThat(result[1].initialInteraction.traceId, `is`(traceId2))
+    }
+
     private fun buildInterceptedInteraction(traceId: String) = easyRandom.nextObject(InterceptedInteraction::class.java)
         .copy(traceId = traceId, createdAt = now(ZoneId.of("UTC")).truncatedTo(MILLIS))
+
+    private fun saveInterceptedInteraction(traceId: String, createdAt: ZonedDateTime) {
+        testRepository.save(easyRandom.nextObject(InterceptedInteraction::class.java)
+            .copy(traceId = traceId, createdAt = createdAt.truncatedTo(MILLIS)))
+    }
 
     companion object {
         @JvmStatic

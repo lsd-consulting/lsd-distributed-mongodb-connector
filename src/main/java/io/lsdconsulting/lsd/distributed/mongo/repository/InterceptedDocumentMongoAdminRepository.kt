@@ -1,8 +1,8 @@
 package io.lsdconsulting.lsd.distributed.mongo.repository
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Accumulators.max
 import com.mongodb.client.model.Aggregates.*
-import com.mongodb.client.model.Filters.ne
 import com.mongodb.client.model.Sorts.descending
 import io.lsdconsulting.lsd.distributed.access.model.InterceptedFlow
 import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentAdminRepository
@@ -20,18 +20,19 @@ class InterceptedDocumentMongoAdminRepository(
 
     override fun findRecentFlows(resultSizeLimit: Int): List<InterceptedFlow> {
 
-        val match = match(ne("_id", ""))
-        val sort = sort(descending("createdAt"))
-        val group = group("\$traceId")
+        val sort1 = sort(descending("createdAt"))
+        val group = group("\$traceId", max("maxCreatedAt", "\$createdAt"))
+        val sort2 = sort(descending("maxCreatedAt"))
 
         val initialLimit = resultSizeLimit * 1000 // To speed up the query
         val distinctTraceIds = interceptedInteractions
-            .aggregate(listOf(match, limit(initialLimit), sort, group, limit(resultSizeLimit)))
+            .aggregate(listOf(sort1, limit(initialLimit), group, sort2, limit(resultSizeLimit)))
             .into(LinkedHashSet<Document>())
             .map { it.getString("_id") }
 
         val interactionsGroupedByTraceId = interceptedDocumentRepository
             .findByTraceIds(*distinctTraceIds.toTypedArray())
+            .sortedByDescending { it.createdAt }
             .groupBy { it.traceId }
 
         return interactionsGroupedByTraceId.values.map {
