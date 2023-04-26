@@ -33,13 +33,16 @@ class InterceptedDocumentMongoAdminRepository(
             .findByTraceIdsUnsorted(*distinctTraceIds.toTypedArray())
             .groupBy { it.traceId }
 
-        return interactionsGroupedByTraceId.values.map {
-            InterceptedFlow(
-                initialInteraction = it.minBy { x -> x.createdAt },
-                finalInteraction = it.maxBy { x -> x.createdAt },
-                totalCapturedInteractions = it.size
-            )
-        }
+        return distinctTraceIds
+            .map {
+                interactionsGroupedByTraceId[it]!! // This is necessary to ensure the order set in distinctTraceIds
+            }.map {
+                InterceptedFlow(
+                    initialInteraction = it.minBy { x -> x.createdAt },
+                    finalInteraction = it.maxBy { x -> x.createdAt },
+                    totalCapturedInteractions = it.size
+                )
+            }
     }
 
     init {
