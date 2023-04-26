@@ -10,7 +10,8 @@ import java.time.ZoneId
 import org.litote.kmongo.find as findMany
 
 class InterceptedDocumentMongoRepository(
-    interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
+    interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
+    failOnConnectionError: Boolean = false
 ) : InterceptedDocumentRepository {
 
     private val interceptedInteractions: MongoCollection<InterceptedInteraction>?
@@ -20,6 +21,9 @@ class InterceptedDocumentMongoRepository(
             interceptedInteractionCollectionBuilder.getInterceptedInteractionCollection()
         } catch (e: Exception) {
             log().error(e.message, e)
+            if (failOnConnectionError) {
+                throw e
+            }
             null
         }
         interceptedInteractions = tempCollection

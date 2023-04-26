@@ -11,6 +11,14 @@
     {
       "name": "lsd.dist.db.connectionTimeout.millis",
       "type": "java.lang.String"
+    },
+    {
+      "name": "lsd.dist.db.collectionSizeLimit.megabytes",
+      "type": "java.lang.String"
+    },
+    {
+      "name": "lsd.dist.db.failOnConnectionError",
+      "type": "java.lang.Boolean"
     }
   ]
 }

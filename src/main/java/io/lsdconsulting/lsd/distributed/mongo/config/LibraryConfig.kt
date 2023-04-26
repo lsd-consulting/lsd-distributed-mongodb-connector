@@ -13,9 +13,10 @@ open class LibraryConfig {
     @Bean
     @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentRepository(
-        interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
+        interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
+        @Value("\${lsd.dist.db.failOnConnectionError:#{true}}") failOnConnectionError: Boolean,
     ) = InterceptedDocumentMongoRepository(
-        interceptedInteractionCollectionBuilder
+        interceptedInteractionCollectionBuilder, failOnConnectionError
     )
 
     @Bean
