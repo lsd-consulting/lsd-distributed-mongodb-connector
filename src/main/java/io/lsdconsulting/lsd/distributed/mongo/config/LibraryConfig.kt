@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@ConditionalOnProperty(name = ["lsd.dist.db.connectionString"])
+@ConditionalOnProperty(name = ["lsd.dist.connectionString"])
 open class LibraryConfig {
     @Bean
-    @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
+    @ConditionalOnExpression("#{'\${lsd.dist.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentRepository(
         interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder,
         @Value("\${lsd.dist.db.failOnConnectionError:#{true}}") failOnConnectionError: Boolean,
@@ -20,7 +20,7 @@ open class LibraryConfig {
     )
 
     @Bean
-    @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
+    @ConditionalOnExpression("#{'\${lsd.dist.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedDocumentAdminRepository(
         interceptedDocumentRepository: InterceptedDocumentMongoRepository, // TODO Replace with the interface
         interceptedInteractionCollectionBuilder: InterceptedInteractionCollectionBuilder
@@ -29,9 +29,9 @@ open class LibraryConfig {
     )
 
     @Bean
-    @ConditionalOnExpression("#{'\${lsd.dist.db.connectionString:}'.startsWith('mongodb://')}")
+    @ConditionalOnExpression("#{'\${lsd.dist.connectionString:}'.startsWith('mongodb://')}")
     open fun interceptedInteractionCollectionBuilder(
-        @Value("\${lsd.dist.db.connectionString}") dbConnectionString: String,
+        @Value("\${lsd.dist.connectionString}") dbConnectionString: String,
         @Value("\${lsd.dist.db.trustStoreLocation:#{null}}") trustStoreLocation: String?,
         @Value("\${lsd.dist.db.trustStorePassword:#{null}}") trustStorePassword: String?,
         @Value("\${lsd.dist.db.connectionTimeout.millis:#{" + DEFAULT_TIMEOUT_MILLIS + "}}") connectionTimeout: Int,
