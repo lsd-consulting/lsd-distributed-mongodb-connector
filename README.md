@@ -32,10 +32,10 @@ the `failOnConnectionError` parameter:
 
 The following properties can be overridden by setting a System property.
 
-| Property Name                             | Default | Description                                                                                                                                                                               |
-|-------------------------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| lsd.dist.db.trustStoreLocation            | empty   | Useful for connecting to a db instance requireing a private unsigned certificate.                                                                                                         |
-| lsd.dist.db.trustStorePassword            | empty   | Useful for connecting to a db instance requireing a private unsigned certificate.                                                                                                         |
-| lsd.dist.db.connectionTimeout.millis      | 500     | This value should be higher (the MongoDB driver's default is 20,000) when `failOnConnectionError=false`.                                                                                  |
+| Property Name                             | Default | Description                                                                                                                                                                                |
+|-------------------------------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| lsd.dist.db.trustStoreLocation            | empty   | Useful for connecting to a db instance requiring a certificate of the signing authority (only required for TLS where the certificate is provided).                                         |
+| lsd.dist.db.trustStorePassword            | empty   | Useful for connecting to a db instance requiring a certificate of the signing authority.                                                                                                   |
+| lsd.dist.db.connectionTimeout.millis      | 500     | This value should be higher than the default (the MongoDB driver's default is 20,000) when `failOnConnectionError=false`.                                                                  |
 | lsd.dist.db.collectionSizeLimit.megabytes | 10,000  | The connector creates the LSD collection as a capped size collection when it's missing with some predefined settings, eg. required indexes, capped size. This values sets the capped size. |
-| lsd.dist.db.failOnConnectionError         | false   | See [Modes](#Modes) for details.                                                                                                                                                          |
+| lsd.dist.db.failOnConnectionError         | false   | See [Modes](#Modes) for details.                                                                                                                                                           |
