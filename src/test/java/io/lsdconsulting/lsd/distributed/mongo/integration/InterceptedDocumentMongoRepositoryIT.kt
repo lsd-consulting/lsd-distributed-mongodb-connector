@@ -74,6 +74,8 @@ internal class InterceptedDocumentMongoRepositoryIT {
         val interceptedInteraction = InterceptedInteraction(
             elapsedTime = 20L,
             httpStatus = "OK",
+            serviceName = "service",
+            target = "target",
             path = "/path",
             httpMethod = "GET",
             body = "body",

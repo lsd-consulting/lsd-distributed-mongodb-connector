@@ -3,7 +3,7 @@ dependencies {
     api 'org.litote.kmongo:kmongo:4.9.0'
 
     // LSD
-    api 'io.github.lsd-consulting:lsd-distributed-data-access:1.0.2'
+    api 'io.github.lsd-consulting:lsd-distributed-data-access:1.0.3'
 
     // Spring
     implementation 'org.springframework.boot:spring-boot-autoconfigure:2.7.10'
