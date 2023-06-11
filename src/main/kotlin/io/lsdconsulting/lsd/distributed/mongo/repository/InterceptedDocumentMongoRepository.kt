@@ -32,6 +32,7 @@ class InterceptedDocumentMongoRepository(
     override fun save(interceptedInteraction: InterceptedInteraction) {
         if (isActive()) {
             try {
+                log().debug("Saving interceptedInteraction={}", interceptedInteraction)
                 val startTime = System.currentTimeMillis()
                 interceptedInteractions!!.insertOne(interceptedInteraction)
                 log().trace("save took {} ms", System.currentTimeMillis() - startTime)
