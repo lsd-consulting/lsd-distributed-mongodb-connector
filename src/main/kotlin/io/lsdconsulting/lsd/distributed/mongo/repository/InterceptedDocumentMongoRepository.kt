@@ -2,8 +2,8 @@ package io.lsdconsulting.lsd.distributed.mongo.repository
 
 import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
-import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
-import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentRepository
+import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
+import io.lsdconsulting.lsd.distributed.connector.repository.InterceptedDocumentRepository
 import io.lsdconsulting.lsd.distributed.mongo.config.log
 import org.litote.kmongo.`in`
 import java.time.ZoneId

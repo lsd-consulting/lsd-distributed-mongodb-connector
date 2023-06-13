@@ -1,6 +1,6 @@
 package io.lsdconsulting.lsd.distributed.mongo.repository.codec
 
-import io.lsdconsulting.lsd.distributed.access.model.InteractionType
+import io.lsdconsulting.lsd.distributed.connector.model.InteractionType
 import org.bson.BsonReader
 import org.bson.BsonWriter
 import org.bson.codecs.Codec

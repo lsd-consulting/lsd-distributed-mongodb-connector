@@ -27,16 +27,16 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             groupId = "$group"
-            artifactId = 'lsd-distributed-mongodb-access'
+            artifactId = 'lsd-distributed-mongodb-connector'
             version = "$version"
 
             from components.java
             artifact sourcesJar
             artifact javadocJar
             pom {
-                name = 'lsd-distributed-mongodb-access'
-                description = 'This is a MongoDB version of the data access for the distributed data storage.'
-                url = 'https://github.com/lsd-consulting/lsd-distributed-mongodb-access'
+                name = 'lsd-distributed-mongodb-connector'
+                description = 'This is a MongoDB version of the data connector for the distributed data storage.'
+                url = 'https://github.com/lsd-consulting/lsd-distributed-mongodb-connector'
                 licenses {
                     license {
                         name = "The Apache Software License, Version 2.0"
@@ -59,7 +59,7 @@ publishing {
                     }
                 }
                 scm {
-                    url = "https://github.com/lsd-consulting/lsd-distributed-mongodb-access.git"
+                    url = "https://github.com/lsd-consulting/lsd-distributed-mongodb-connector.git"
                 }
             }
             repositories {

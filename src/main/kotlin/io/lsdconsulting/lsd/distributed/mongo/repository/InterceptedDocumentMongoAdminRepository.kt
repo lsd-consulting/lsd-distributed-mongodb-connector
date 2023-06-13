@@ -4,8 +4,8 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Accumulators.max
 import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Sorts.descending
-import io.lsdconsulting.lsd.distributed.access.model.InterceptedFlow
-import io.lsdconsulting.lsd.distributed.access.repository.InterceptedDocumentAdminRepository
+import io.lsdconsulting.lsd.distributed.connector.model.InterceptedFlow
+import io.lsdconsulting.lsd.distributed.connector.repository.InterceptedDocumentAdminRepository
 import io.lsdconsulting.lsd.distributed.mongo.config.log
 import org.bson.Document
 

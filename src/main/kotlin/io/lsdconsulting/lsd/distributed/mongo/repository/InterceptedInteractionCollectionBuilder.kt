@@ -9,7 +9,7 @@ import com.mongodb.client.model.Indexes
 import com.mongodb.connection.ClusterSettings
 import com.mongodb.connection.SocketSettings
 import com.mongodb.connection.SslSettings
-import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
+import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.InteractionTypeCodec
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec
 import org.apache.http.ssl.SSLContextBuilder

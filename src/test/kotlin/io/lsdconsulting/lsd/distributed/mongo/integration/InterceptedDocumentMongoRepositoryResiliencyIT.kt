@@ -1,6 +1,6 @@
 package io.lsdconsulting.lsd.distributed.mongo.integration
 
-import io.lsdconsulting.lsd.distributed.access.model.InterceptedInteraction
+import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.TestApplication
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.MONGODB_HOST
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.MONGODB_PORT
