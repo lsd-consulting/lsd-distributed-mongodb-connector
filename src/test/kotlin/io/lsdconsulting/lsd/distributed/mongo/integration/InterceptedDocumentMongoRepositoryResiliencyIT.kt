@@ -41,7 +41,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
-    fun shouldHandleDbBeingDownGracefullyOnStartup() {
+    fun `should handle db being down gracefully on startup`() {
         InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
                 "mongodb://" + randomAlphabetic(10),
@@ -52,19 +52,20 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
-    fun shouldNotSlowDownStartupIfDbDown() {
+    fun `should not slow down startup if db down`() {
         await()
             .atLeast(450, MILLISECONDS)
             .atMost(1000, MILLISECONDS)
             .untilAsserted {
+                val l = InterceptedDocumentMongoRepository(
+                    InterceptedInteractionCollectionBuilder(
+                        "mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT,
+                        DB_CONNECTION_TIMEOUT,
+                        DB_COLLECTION_SIZE_LIMIT
+                    )
+                )
                 assertThat(
-                    InterceptedDocumentMongoRepository(
-                        InterceptedInteractionCollectionBuilder(
-                            "mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT,
-                            DB_CONNECTION_TIMEOUT,
-                            DB_COLLECTION_SIZE_LIMIT
-                        )
-                    ), `is`(
+                    l, `is`(
                         notNullValue()
                     )
                 )
@@ -72,7 +73,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
-    fun shouldHandleDbGoingDownAfterStartup() {
+    fun `should handle db going down after startup`() {
         val underTest = InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
                 "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
@@ -90,7 +91,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
-    fun shouldRecoverFromDbGoingDown() {
+    fun `should recover from db going down`() {
         val underTest = InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
                 "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
@@ -109,7 +110,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     @Test
-    fun shouldNotSlowDownProduction() {
+    fun `should not slow down production`() {
         val underTest = InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
                 "mongodb://" + MONGODB_HOST + ":" + MONGODB_PORT,
