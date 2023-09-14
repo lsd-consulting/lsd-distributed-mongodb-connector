@@ -12,8 +12,8 @@ import de.flapdoodle.embed.mongo.config.Net
 import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.process.runtime.Network
 import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
-import io.lsdconsulting.lsd.distributed.mongo.config.log
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec
+import lsd.logging.log
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider

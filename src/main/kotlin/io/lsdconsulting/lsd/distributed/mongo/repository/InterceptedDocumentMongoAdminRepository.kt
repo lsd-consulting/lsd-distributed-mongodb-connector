@@ -6,7 +6,7 @@ import com.mongodb.client.model.Aggregates.*
 import com.mongodb.client.model.Sorts.descending
 import io.lsdconsulting.lsd.distributed.connector.model.InterceptedFlow
 import io.lsdconsulting.lsd.distributed.connector.repository.InterceptedDocumentAdminRepository
-import io.lsdconsulting.lsd.distributed.mongo.config.log
+import lsd.logging.log
 import org.bson.Document
 
 

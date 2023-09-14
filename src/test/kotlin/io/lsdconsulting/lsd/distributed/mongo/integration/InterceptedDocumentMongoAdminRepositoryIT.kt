@@ -2,7 +2,6 @@ package io.lsdconsulting.lsd.distributed.mongo.integration
 
 import io.lsdconsulting.lsd.distributed.connector.model.InteractionType
 import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
-import io.lsdconsulting.lsd.distributed.mongo.config.log
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.TestApplication
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.config.RepositoryConfig
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository
@@ -11,6 +10,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoAdminRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
+import lsd.logging.log
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*

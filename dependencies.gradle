@@ -4,12 +4,13 @@ dependencies {
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.0'
+    implementation 'io.github.lsd-consulting:lsd-logging-library:1.0.1'
 
     // Spring
-    implementation 'org.springframework.boot:spring-boot-autoconfigure:2.7.10'
-    implementation 'org.springframework.boot:spring-boot-starter:2.7.10'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:2.7.10'
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.14' // Needed for DB connection security
     implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
 }

@@ -4,7 +4,7 @@ import com.mongodb.MongoException
 import com.mongodb.client.MongoCollection
 import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.connector.repository.InterceptedDocumentRepository
-import io.lsdconsulting.lsd.distributed.mongo.config.log
+import lsd.logging.log
 import org.litote.kmongo.`in`
 import java.time.ZoneId
 import org.litote.kmongo.find as findMany
