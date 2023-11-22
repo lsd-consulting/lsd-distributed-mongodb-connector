@@ -11,6 +11,6 @@ dependencies {
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.16' // Needed for DB connection security
-    implementation 'org.apache.commons:commons-lang3:3.13.0'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
     implementation 'org.slf4j:slf4j-api:2.0.9'
 }
