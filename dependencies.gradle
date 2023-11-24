@@ -3,8 +3,8 @@ dependencies {
     api 'org.litote.kmongo:kmongo:4.11.0'
 
     // LSD
-    api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.1'
-    implementation 'io.github.lsd-consulting:lsd-logging-library:1.0.4'
+    api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.2'
+    implementation 'io.github.lsd-consulting:lsd-logging-library:1.0.5'
 
     // Spring
     compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.1.5'
