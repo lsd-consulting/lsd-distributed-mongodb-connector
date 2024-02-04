@@ -112,7 +112,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
         val underTest = InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
                     "mongodb://$MONGODB_HOST:$MONGODB_PORT",
-                DB_CONNECTION_TIMEOUT+100,
+                DB_CONNECTION_TIMEOUT,
                 DB_COLLECTION_SIZE_LIMIT
             )
         )
