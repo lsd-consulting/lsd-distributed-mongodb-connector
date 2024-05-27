@@ -1,6 +1,6 @@
 dependencies {
     // Mongo
-    api 'org.litote.kmongo:kmongo:4.11.0'
+    api 'org.litote.kmongo:kmongo:5.1.0'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.7'
