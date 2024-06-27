@@ -39,3 +39,4 @@ The following properties can be overridden by setting a System property.
 | lsd.dist.db.connectionTimeout.millis      | 500     | This value should be higher than the default (the MongoDB driver's default is 20,000) when `failOnConnectionError=false`.                                                                  |
 | lsd.dist.db.collectionSizeLimit.megabytes | 10,000  | The connector creates the LSD collection as a capped size collection when it's missing with some predefined settings, eg. required indexes, capped size. This values sets the capped size. |
 | lsd.dist.db.failOnConnectionError         | false   | See [Modes](#Modes) for details.                                                                                                                                                           |
+
