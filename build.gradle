@@ -45,7 +45,7 @@ apply plugin: 'io.spring.dependency-management'
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2023.0.1'
-        mavenBom 'io.pivotal.spring.cloud:spring-cloud-services-dependencies:4.1.3'
+        mavenBom 'io.pivotal.spring.cloud:spring-cloud-services-dependencies:4.1.5'
         mavenBom SpringBootPlugin.BOM_COORDINATES
     }
 }
