@@ -11,9 +11,10 @@ import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMong
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
 import lsd.logging.log
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import org.apache.commons.lang3.RandomStringUtils.secure
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.hasSize
+import org.hamcrest.Matchers.`is`
 import org.jeasy.random.EasyRandom
 import org.jeasy.random.EasyRandomParameters
 import org.junit.jupiter.api.AfterAll
@@ -42,10 +43,10 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     private lateinit var underTest: InterceptedDocumentMongoAdminRepository
 
-    private val primaryTraceId = randomAlphanumeric(10)
-    private val secondaryTraceId = randomAlphanumeric(10)
-    private val sourceName = randomAlphanumeric(10).uppercase(Locale.getDefault())
-    private val targetName = randomAlphanumeric(10).uppercase(Locale.getDefault())
+    private val primaryTraceId = secure().nextAlphanumeric(10)
+    private val secondaryTraceId = secure().nextAlphanumeric(10)
+    private val sourceName = secure().nextAlphanumeric(10).uppercase(Locale.getDefault())
+    private val targetName = secure().nextAlphanumeric(10).uppercase(Locale.getDefault())
 
     @BeforeEach
     fun setup() {
@@ -64,6 +65,7 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
             )
         )
         testRepository.deleteAll()
+        log().info("primaryTraceId={}, secondaryTraceId={}", primaryTraceId, secondaryTraceId)
     }
 
     @Test
@@ -127,8 +129,6 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     @Test
     fun `should distinguish flows`() {
-        log().info("primaryTraceId={}", primaryTraceId)
-        log().info("secondaryTraceId={}", secondaryTraceId)
         val now = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
         val primaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(1))
         val secondaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(2))
@@ -150,8 +150,6 @@ internal class InterceptedDocumentMongoAdminRepositoryIT {
 
     @Test
     fun `should respect the resultSizeLimit`() {
-        log().info("primaryTraceId={}", primaryTraceId)
-        log().info("secondaryTraceId={}", secondaryTraceId)
         val now = now(ZoneId.of("UTC")).truncatedTo(MILLIS)
         val primaryFlowInitialInterceptedInteraction = saveInterceptedInteraction(primaryTraceId, now.plusSeconds(1))
         saveInterceptedInteraction(secondaryTraceId, now.plusSeconds(2))

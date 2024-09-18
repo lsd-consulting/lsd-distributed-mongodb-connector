@@ -9,7 +9,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
-import org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
+import org.apache.commons.lang3.RandomStringUtils.secure
 import org.awaitility.Awaitility.await
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -41,7 +41,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     fun `should handle db being down gracefully on startup`() {
         InterceptedDocumentMongoRepository(
             InterceptedInteractionCollectionBuilder(
-                "mongodb://" + randomAlphabetic(10),
+                "mongodb://" + secure().nextAlphabetic(10),
                 DB_CONNECTION_TIMEOUT,
                 DB_COLLECTION_SIZE_LIMIT
             )
@@ -56,7 +56,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
             .untilAsserted {
                 val l = InterceptedDocumentMongoRepository(
                     InterceptedInteractionCollectionBuilder(
-                        "mongodb://" + randomAlphabetic(10) + ":" + MONGODB_PORT,
+                        "mongodb://" + secure().nextAlphabetic(10) + ":" + MONGODB_PORT,
                         DB_CONNECTION_TIMEOUT,
                         DB_COLLECTION_SIZE_LIMIT
                     )

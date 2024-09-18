@@ -10,7 +10,7 @@ import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.Tes
 import io.lsdconsulting.lsd.distributed.mongo.integration.testapp.repository.TestRepository.Companion.tearDownDatabase
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedDocumentMongoRepository
 import io.lsdconsulting.lsd.distributed.mongo.repository.InterceptedInteractionCollectionBuilder
-import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
+import org.apache.commons.lang3.RandomStringUtils.secure
 import org.bson.Document
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
@@ -99,7 +99,7 @@ internal class InterceptedDocumentMongoRepositoryIT {
 
     @Test
     fun `should save and retrieve random entry from collection`() {
-        val traceId = randomAlphanumeric(10)
+        val traceId = secure().nextAlphanumeric(10)
         val interceptedInteraction = buildInterceptedInteraction(traceId)
 
         underTest.save(interceptedInteraction)
@@ -117,7 +117,7 @@ internal class InterceptedDocumentMongoRepositoryIT {
 
     @Test
     fun `should save and retrieve in correct order`() {
-        val traceId = randomAlphanumeric(10)
+        val traceId = secure().nextAlphanumeric(10)
         val interceptedInteractions = (1..10)
             .map { _ -> buildInterceptedInteraction(traceId) }
             .sortedByDescending { it.createdAt }

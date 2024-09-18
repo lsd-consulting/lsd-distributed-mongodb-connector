@@ -17,9 +17,9 @@ group = 'io.github.lsd-consulting'
 version = gitVersion().replaceAll("^v", "")
 println "Build Version = ${version}"
 
-sourceCompatibility = '17'
-targetCompatibility = '17'
-compileKotlin.kotlinOptions.jvmTarget = "17"
+kotlin {
+    jvmToolchain(17)
+}
 
 repositories {
     mavenLocal()
@@ -30,7 +30,7 @@ jacocoTestReport {
     reports {
         xml.enabled(true)
         html.enabled(true)
-        html.setDestination(project.provider(() -> new File("${project.buildDir}/reports/coverage")))
+        html.getOutputLocation().set(project.layout.buildDirectory.dir('reports/coverage'))
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
