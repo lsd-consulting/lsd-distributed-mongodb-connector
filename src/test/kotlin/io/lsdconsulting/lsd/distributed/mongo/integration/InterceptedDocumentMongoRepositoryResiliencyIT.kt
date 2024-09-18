@@ -131,7 +131,7 @@ internal class InterceptedDocumentMongoRepositoryResiliencyIT {
     }
 
     companion object {
-        private const val DB_CONNECTION_TIMEOUT = 500
+        private const val DB_CONNECTION_TIMEOUT = 500L
         const val DB_COLLECTION_SIZE_LIMIT = 1024 * 100L
 
         @JvmStatic

@@ -1,13 +1,18 @@
 dependencies {
     // Mongo
-    api 'org.litote.kmongo:kmongo:5.1.0'
+    api('org.litote.kmongo:kmongo:5.1.0') {
+        exclude group: "org.mongodb", module: "mongodb-driver-sync"
+        exclude group: "org.mongodb", module: "mongodb-driver-core"
+    }
+    api 'org.mongodb:mongodb-driver-core:5.1.4'
+    api 'org.mongodb:mongodb-driver-sync:5.1.4'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.8'
     implementation 'io.github.lsd-consulting:lsd-logging-library:1.0.14'
 
     // Spring
-    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.2.5'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.3.3'
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.16' // Needed for DB connection security

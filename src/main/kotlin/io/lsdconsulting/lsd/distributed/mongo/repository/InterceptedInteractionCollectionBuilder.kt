@@ -29,7 +29,7 @@ const val DEFAULT_COLLECTION_SIZE_LIMIT_MBS = 1000 * 10L // 10Gb
 
 class InterceptedInteractionCollectionBuilder(
     private val dbConnectionString: String, private val trustStoreLocation: String?,
-    private val trustStorePassword: String?, private val connectionTimeout: Int,
+    private val trustStorePassword: String?, private val connectionTimeout: Long,
     private val collectionSizeLimit: Long
 ) {
     val pojoCodecRegistry: CodecRegistry = CodecRegistries.fromRegistries(
@@ -45,7 +45,7 @@ class InterceptedInteractionCollectionBuilder(
                 b.readTimeout(connectionTimeout, MILLISECONDS)
             }
             .applyToClusterSettings { b: ClusterSettings.Builder ->
-                b.serverSelectionTimeout(connectionTimeout.toLong(), MILLISECONDS)
+                b.serverSelectionTimeout(connectionTimeout, MILLISECONDS)
             }
             .applyConnectionString(ConnectionString(dbConnectionString))
         if (!trustStoreLocation.isNullOrBlank() && !trustStorePassword.isNullOrBlank()) {
@@ -112,7 +112,7 @@ class InterceptedInteractionCollectionBuilder(
     }
 
     constructor(
-        dbConnectionString: String, connectionTimeout: Int,
+        dbConnectionString: String, connectionTimeout: Long,
         collectionSizeLimit: Long
     ) : this(dbConnectionString, null, null, connectionTimeout, collectionSizeLimit)
 }
