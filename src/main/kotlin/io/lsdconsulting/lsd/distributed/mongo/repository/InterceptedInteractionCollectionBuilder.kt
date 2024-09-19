@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 
 const val DATABASE_NAME = "lsd"
 const val COLLECTION_NAME = "interceptedInteraction"
-const val DEFAULT_TIMEOUT_MILLIS = 500
+const val DEFAULT_TIMEOUT_MILLIS = 500L
 const val DEFAULT_COLLECTION_SIZE_LIMIT_MBS = 1000 * 10L // 10Gb
 
 class InterceptedInteractionCollectionBuilder(
