@@ -1,11 +1,11 @@
 dependencies {
     // Mongo
-    api('org.litote.kmongo:kmongo:5.1.0') {
+    api('org.litote.kmongo:kmongo:5.2.1') {
         exclude group: "org.mongodb", module: "mongodb-driver-sync"
         exclude group: "org.mongodb", module: "mongodb-driver-core"
     }
-    api 'org.mongodb:mongodb-driver-core:5.2.1'
-    api 'org.mongodb:mongodb-driver-sync:5.2.1'
+    api 'org.mongodb:mongodb-driver-core:5.3.1'
+    api 'org.mongodb:mongodb-driver-sync:5.3.1'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:2.0.11'
