@@ -1,6 +1,6 @@
 dependencies {
     // Mongo
-    api('org.litote.kmongo:kmongo:5.1.0') {
+    api('org.litote.kmongo:kmongo:5.5.1') {
         exclude group: "org.mongodb", module: "mongodb-driver-sync"
         exclude group: "org.mongodb", module: "mongodb-driver-core"
     }
