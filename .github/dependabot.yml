@@ -2,6 +2,7 @@
 
 version: 2
 updates:
+  # Production dependencies - triggers semantic releases
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
@@ -9,6 +10,16 @@ updates:
     commit-message:
       prefix: "fix"  # Triggers PATCH release
     open-pull-requests-limit: 10
+    ignore:
+      # Ignore test dependencies in this update group
+      - dependency-name: "org.springframework.boot:spring-boot-starter-test"
+      - dependency-name: "org.springframework.boot:spring-boot-starter-web"
+      - dependency-name: "org.springframework.boot:spring-boot-starter-data-mongodb"
+      - dependency-name: "org.junit.jupiter:*"
+      - dependency-name: "org.junit.platform:*"
+      - dependency-name: "de.flapdoodle.embed:*"
+      - dependency-name: "org.jeasy:*"
+      - dependency-name: "org.awaitility:*"
     groups:
       lsd-dependencies:
         patterns:
@@ -27,6 +38,29 @@ updates:
       kotlin-dependencies:
         patterns:
           - "org.jetbrains.kotlin*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Test dependencies - does not trigger semantic releases
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "test"  # Does not trigger semantic release
+    open-pull-requests-limit: 5
+    groups:
+      testing-dependencies:
+        patterns:
+          - "org.springframework.boot:spring-boot-starter-test"
+          - "org.springframework.boot:spring-boot-starter-web"
+          - "org.springframework.boot:spring-boot-starter-data-mongodb"
+          - "org.junit.jupiter:*"
+          - "org.junit.platform:*"
+          - "de.flapdoodle.embed:*"
+          - "org.jeasy:*"
+          - "org.awaitility:*"
         update-types:
           - "minor"
           - "patch"
