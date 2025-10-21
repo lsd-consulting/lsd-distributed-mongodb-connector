@@ -6,9 +6,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
     // Other
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
-    testImplementation 'org.junit.platform:junit-platform-commons:1.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.junit.platform:junit-platform-commons'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:3.5.4'
     testImplementation 'org.jeasy:easy-random-core:5.0.0'
     testImplementation 'org.awaitility:awaitility:4.3.0'

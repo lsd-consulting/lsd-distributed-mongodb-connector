@@ -28,9 +28,9 @@ repositories {
 
 jacocoTestReport {
     reports {
-        xml.enabled(true)
-        html.enabled(true)
-        html.getOutputLocation().set(project.layout.buildDirectory.dir('reports/coverage'))
+        xml.required = true
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('reports/coverage')
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
