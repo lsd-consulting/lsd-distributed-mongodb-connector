@@ -9,7 +9,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine'
     testImplementation 'org.junit.platform:junit-platform-commons'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.23.0'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.24.0'
     testImplementation 'org.jeasy:easy-random-core:5.0.0'
     testImplementation 'org.awaitility:awaitility:4.3.0'
 }
