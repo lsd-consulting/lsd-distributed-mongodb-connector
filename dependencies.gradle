@@ -12,7 +12,7 @@ dependencies {
     implementation 'io.github.lsd-consulting:lsd-logging-library:2.0.3'
 
     // Spring
-    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.5.10'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:3.5.11'
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.16' // Needed for DB connection security
