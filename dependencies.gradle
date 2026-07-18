@@ -8,7 +8,7 @@ dependencies {
     api 'org.mongodb:mongodb-driver-sync:5.9.0'
 
     // LSD
-    api 'io.github.lsd-consulting:lsd-distributed-connector:2.2.10'
+    api 'io.github.lsd-consulting:lsd-distributed-connector:2.2.11'
     implementation 'io.github.lsd-consulting:lsd-logging-library:2.0.8'
 
     // Spring
