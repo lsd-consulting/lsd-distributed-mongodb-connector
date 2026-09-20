@@ -9,8 +9,8 @@ import de.flapdoodle.embed.mongo.config.Net
 import de.flapdoodle.embed.mongo.distribution.Version
 import de.flapdoodle.embed.mongo.transitions.Mongod
 import de.flapdoodle.embed.mongo.transitions.RunningMongodProcess
-import de.flapdoodle.reverse.TransitionWalker.ReachedState
-import de.flapdoodle.reverse.transitions.Start
+import de.flapdoodle.commons.reverse.TransitionWalker.ReachedState
+import de.flapdoodle.commons.reverse.transitions.Start
 import io.lsdconsulting.lsd.distributed.connector.model.InterceptedInteraction
 import io.lsdconsulting.lsd.distributed.mongo.repository.codec.ZonedDateTimeCodec
 import lsd.logging.log
