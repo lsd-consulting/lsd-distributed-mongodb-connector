@@ -39,3 +39,19 @@ The following properties can be overridden by setting a System property.
 | lsd.dist.db.connectionTimeout.millis      | 500     | This value should be higher than the default (the MongoDB driver's default is 20,000) when `failOnConnectionError=false`.                                                                  |
 | lsd.dist.db.collectionSizeLimit.megabytes | 10,000  | The connector creates the LSD collection as a capped size collection when it's missing with some predefined settings, eg. required indexes, capped size. This values sets the capped size. |
 | lsd.dist.db.failOnConnectionError         | false   | See [Modes](#Modes) for details.                                                                                                                                                           |
+
+## Releasing
+
+Pushing to main builds but does not release. Maven Central limits the
+io.github.lsd-consulting namespace to 7 releases a month, so each release is
+started on purpose. semantic-release still picks the version from the feat/fix
+commits since the last release, and does nothing if there are none.
+
+Release by hand:
+
+```
+gh workflow run release.yml -R lsd-consulting/lsd-distributed-mongodb-connector -f reason="why this release is needed"
+```
+
+To release weekly instead (Tuesday 07:00 UTC), set the repository variable
+`WEEKLY_RELEASE` to `true`. It is off by default.
