@@ -4,8 +4,8 @@ dependencies {
         exclude group: "org.mongodb", module: "mongodb-driver-sync"
         exclude group: "org.mongodb", module: "mongodb-driver-core"
     }
-    api 'org.mongodb:mongodb-driver-core:5.13.0'
-    api 'org.mongodb:mongodb-driver-sync:5.13.0'
+    api 'org.mongodb:mongodb-driver-core:5.14.0'
+    api 'org.mongodb:mongodb-driver-sync:5.14.0'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:3.1.2'
