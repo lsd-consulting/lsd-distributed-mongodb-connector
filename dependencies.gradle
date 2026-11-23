@@ -4,15 +4,15 @@ dependencies {
         exclude group: "org.mongodb", module: "mongodb-driver-sync"
         exclude group: "org.mongodb", module: "mongodb-driver-core"
     }
-    api 'org.mongodb:mongodb-driver-core:5.14.0'
-    api 'org.mongodb:mongodb-driver-sync:5.14.0'
+    api 'org.mongodb:mongodb-driver-core:5.15.0'
+    api 'org.mongodb:mongodb-driver-sync:5.15.0'
 
     // LSD
     api 'io.github.lsd-consulting:lsd-distributed-connector:3.1.2'
     implementation 'io.github.lsd-consulting:lsd-logging-library:3.0.1'
 
     // Spring
-    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:4.1.2'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure:4.2.0'
 
     // Other
     implementation 'org.apache.httpcomponents:httpcore:4.4.16' // Needed for DB connection security
